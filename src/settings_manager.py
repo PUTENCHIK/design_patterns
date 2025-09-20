@@ -12,6 +12,7 @@ TODO
 class SettingsManager:
     __file_name: str = ""
     __company: CompanyModel = None
+    __instance = None
 
     @property
     def file_name(self) -> str:
@@ -25,21 +26,21 @@ class SettingsManager:
             return
         self.__file_name = value.strip()
 
-    def __init__(self, file_name: str):
-        self.file_name = file_name
+    def __init__(self):
         self.default()
 
-    def __new__(cls, file_name: str):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(SettingsManager, cls).__new__(cls)
-        return cls.instance
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
 
     def company_settings(self) -> CompanyModel:
         return self.__company
     
-    def load(self) -> bool:
-        if not self.__file_name.strip():
-            raise FileNotFoundError(f"No target file: {self.file_name}")
+    def load(self, file_name: str) -> bool:
+        if not file_name.strip():
+            raise FileNotFoundError(f"No target file: {file_name}")
+        self.file_name = file_name
         try:
             file = open(self.file_name)
             data = json.load(file)

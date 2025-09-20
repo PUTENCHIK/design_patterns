@@ -1,5 +1,3 @@
-import json
-import pathlib
 import unittest
 from src.models.company_model import CompanyModel
 from src.settings_manager import SettingsManager
@@ -24,17 +22,15 @@ class TestModels(unittest.TestCase):
         model.name = "Danny"
         assert model.name != ""
 
-    # Имя из файла настроек
+    # Загрузка существующего валидного файла настроек
     def test_load_data_company_model(self):
-        manager = SettingsManager("settings.json")
+        manager = SettingsManager()
 
-        assert manager.load()
+        assert manager.load("settings.json")
     
-    # Сравнение моделей
+    # Проверка на синглтон  SettingsManager
     def test_equal_company_models(self):
-        file_path = "settings.json"
-
-        manager1 = SettingsManager(file_path)
-        manager2 = SettingsManager(file_path)
+        manager1 = SettingsManager()
+        manager2 = SettingsManager()
 
         assert manager1.company_settings == manager2.company_settings

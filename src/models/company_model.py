@@ -1,7 +1,3 @@
-import json
-from pathlib import Path
-
-
 class CompanyModel:
     __name: str = ""
     __inn: str = ""
