@@ -43,15 +43,17 @@ class SettingsManager:
         self.file_name = file_name
         try:
             file = open(self.file_name)
-            data = json.load(file)
-            if "company" in data:
-                item = data["company"]
-                self.__company.name = item["name"]
-                self.__company.inn = item["inn"]
-                return True
-            return False
+            return self.convert(json.load(file))
         except:
             return False
+    
+    def convert(self, data: dict) -> bool:
+        if "company" in data:
+            item = data["company"]
+            self.__company.name = item["name"]
+            self.__company.inn = item["inn"]
+            return True
+        return False
     
     def default(self):
         self.__company = CompanyModel()
