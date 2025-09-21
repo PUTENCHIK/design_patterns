@@ -7,3 +7,6 @@ class Settings:
     @property
     def company(self) -> CompanyModel:
         return self.__company
+
+    def __init__(self):
+        self.__company = CompanyModel()

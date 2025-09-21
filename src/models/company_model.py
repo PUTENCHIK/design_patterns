@@ -12,8 +12,12 @@ class CompanyModel:
     
     @name.setter
     def name(self, value: str):
-        if value.strip():
-            self.__name = value.strip()
+        if not isinstance(value, str):
+            raise TypeError("Field 'name' must be string")
+        value = value.strip()
+        if not value:
+            raise ValueError("")
+        self.__name = value
     
     @property
     def inn(self) -> str:
@@ -21,9 +25,12 @@ class CompanyModel:
     
     @inn.setter
     def inn(self, value: str):
+        if not isinstance(value, str):
+            raise TypeError("Field 'inn' must be string")
         value = value.strip()
-        if value and len(value) == 12 and value.isdigit():
-            self.__inn = value
+        if len(value) != 12 or not value.isdigit():
+            raise ValueError("")
+        self.__inn = value
 
     @property
     def account(self) -> str:
@@ -31,9 +38,12 @@ class CompanyModel:
     
     @account.setter
     def account(self, value: str):
+        if not isinstance(value, str):
+            raise TypeError("Field 'account' must be string")
         value = value.strip()
-        if value and len(value) == 11 and value.isdigit():
-            self.__account = value
+        if len(value) != 11 or not value.isdigit():
+            raise ValueError("")
+        self.__account = value
 
     @property
     def corr_account(self) -> str:
@@ -41,9 +51,12 @@ class CompanyModel:
     
     @corr_account.setter
     def corr_account(self, value: str):
+        if not isinstance(value, str):
+            raise TypeError("Field 'corr_account' must be string")
         value = value.strip()
-        if value and len(value) == 11 and value.isdigit():
-            self.__corr_account = value
+        if len(value) != 11 or not value.isdigit():
+            raise ValueError("")
+        self.__corr_account = value
 
     @property
     def bik(self) -> str:
@@ -51,9 +64,12 @@ class CompanyModel:
     
     @bik.setter
     def bik(self, value: str):
+        if not isinstance(value, str):
+            raise TypeError("Field 'bik' must be string")
         value = value.strip()
-        if value and len(value) == 9 and value.isdigit():
-            self.__corr_account = value
+        if len(value) != 9 or not value.isdigit():
+            raise ValueError("")
+        self.__bik = value
 
     @property
     def ownership(self) -> str:
@@ -61,9 +77,12 @@ class CompanyModel:
     
     @ownership.setter
     def ownership(self, value: str):
+        if not isinstance(value, str):
+            raise TypeError("Field 'ownership' must be string")
         value = value.strip()
-        if value and len(value) == 5:
-            self.__ownership = value
+        if len(value) != 5:
+            raise ValueError("")
+        self.__ownership = value
 
     def __init__(self):
         pass
