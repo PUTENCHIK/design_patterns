@@ -93,6 +93,17 @@ class TestModels(unittest.TestCase):
             company.ownership = dict()
         with self.assertRaises(ValueError):
             company.ownership = "too long ownership"
+    
+    # Загрузка данных двух компаний из разных директорий
+    def test_load_data_any_directory(self):
+        manager = SettingsManager()
+        settings_path1 = "tests/data/settings1.json"
+        settings_path2 = "tests/data/inner_dir/settings2.json"
+
+        assert manager.load(settings_path1)
+        assert manager.settings.company.name == "Company 1"
+        assert manager.load(settings_path2)
+        assert manager.settings.company.name == "Company 2 from inner directory"
 
 
 if __name__ == "__main__":

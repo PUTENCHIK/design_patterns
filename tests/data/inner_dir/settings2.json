@@ -1,0 +1,10 @@
+{
+    "company": {
+        "name": "Company 2 from inner directory",
+        "inn": "123456789123",
+        "account": "12345678912",
+        "corr_account": "12345678912",
+        "bik": "123456789",
+        "ownership": "owner"
+    }
+}
