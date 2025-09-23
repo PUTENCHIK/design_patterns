@@ -97,8 +97,8 @@ class TestModels(unittest.TestCase):
     # Загрузка данных двух компаний из разных директорий
     def test_load_data_any_directory(self):
         manager = SettingsManager()
-        settings_path1 = "tests/data/settings1.json"
-        settings_path2 = "tests/data/inner_dir/settings2.json"
+        settings_path1 = "../settings1.json" # /home/maxim/study/settings1.json
+        settings_path2 = "/home/maxim/study/design_patterns/tests/data/inner_dir/settings2.json"
 
         assert manager.load(settings_path1)
         assert manager.settings.company.name == "Company 1"

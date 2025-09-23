@@ -20,9 +20,11 @@ class SettingsManager:
 
     @file_name.setter
     def file_name(self, value: str):
+        if not isinstance(value, str):
+            raise TypeError("Settings file name must be string")
         value = value.strip()
         if not value:
-            return
+            raise ValueError("Settings file name can't be empty")
         if not pathlib.Path(value).exists():
             raise FileNotFoundError(f"No such file: {value}")
         self.__file_name = value
@@ -46,9 +48,12 @@ class SettingsManager:
     
     def load(self, file_name: str) -> bool:
         self.file_name = file_name
+        path = pathlib.Path(self.file_name).absolute()
+        if not path.exists():
+            return False
         try:
-            file = open(self.file_name)
-            return self.convert(json.load(file))
+            with open(path, mode='r', encoding='utf-8') as file:
+                return self.convert(json.load(file))
         except:
             return False
     
