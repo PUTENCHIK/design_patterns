@@ -13,8 +13,8 @@ class TestModels(unittest.TestCase):
     # Имя из пробелов
     def test_empty_name_company_model(self):
         model = CompanyModel()
-        model.name = " "
-        assert model.name == ""
+        with self.assertRaises(ValueError):
+            model.name = " "
     
     # Непустое имя
     def test_new_name_company_model(self):
@@ -33,4 +33,78 @@ class TestModels(unittest.TestCase):
         manager1 = SettingsManager()
         manager2 = SettingsManager()
 
-        assert manager1.company_settings == manager2.company_settings
+        assert manager1.settings == manager2.settings
+        assert manager1.settings.company == manager2.settings.company
+    
+    # Загрузка данных компании из settings.json
+    def test_load_settings_valid_data(self):
+        manager = SettingsManager()
+
+        assert manager.load("settings.json")
+        assert manager.settings.company.name == "Danny MAD Entertainment"
+        assert manager.settings.company.inn == "385693061393"
+        assert manager.settings.company.account == "34583289581"
+        assert manager.settings.company.corr_account == "95847306800"
+        assert manager.settings.company.bik == "458205943"
+        assert manager.settings.company.ownership == "owner"
+    
+    # Загрузка данных компании из тестового файла в другой директории
+    def test_load_settings_different_path(self):
+        manager = SettingsManager()
+
+        assert manager.load("tests/data/test_settings.json")
+        assert manager.settings.company.name == "Test Company"
+        assert manager.settings.company.inn == "123456789123"
+        assert manager.settings.company.account == "12345678912"
+        assert manager.settings.company.corr_account == "12345678912"
+        assert manager.settings.company.bik == "123456789"
+        assert manager.settings.company.ownership == "owner"
+    
+    # Присваивание полям модели компании невалидных данных
+    def test_appropriate_model_unvalid_data(self):
+        company = CompanyModel()
+
+        with self.assertRaises(TypeError):
+            company.name = 1
+        with self.assertRaises(ValueError):
+            company.name = ""
+        
+        with self.assertRaises(TypeError):
+            company.inn = 123123
+        with self.assertRaises(ValueError):
+            company.inn = "not inn"
+        
+        with self.assertRaises(TypeError):
+            company.account = 0x123
+        with self.assertRaises(ValueError):
+            company.account = "not account"
+        
+        with self.assertRaises(TypeError):
+            company.corr_account = True
+        with self.assertRaises(ValueError):
+            company.corr_account = "not corr_account"
+        
+        with self.assertRaises(TypeError):
+            company.bik = list()
+        with self.assertRaises(ValueError):
+            company.bik = "not bik"
+        
+        with self.assertRaises(TypeError):
+            company.ownership = dict()
+        with self.assertRaises(ValueError):
+            company.ownership = "too long ownership"
+    
+    # Загрузка данных двух компаний из разных директорий
+    def test_load_data_any_directory(self):
+        manager = SettingsManager()
+        settings_path1 = "../settings1.json" # /home/maxim/study/settings1.json
+        settings_path2 = "/home/maxim/study/design_patterns/tests/data/inner_dir/settings2.json"
+
+        assert manager.load(settings_path1)
+        assert manager.settings.company.name == "Company 1"
+        assert manager.load(settings_path2)
+        assert manager.settings.company.name == "Company 2 from inner directory"
+
+
+if __name__ == "__main__":
+    unittest.main()
