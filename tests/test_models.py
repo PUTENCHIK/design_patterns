@@ -1,6 +1,7 @@
 import unittest
 from src.models.company_model import CompanyModel
 from src.settings_manager import SettingsManager
+from src.models.storage_model import StorageModel
 
 
 class TestModels(unittest.TestCase):
@@ -104,6 +105,21 @@ class TestModels(unittest.TestCase):
         assert manager.settings.company.name == "Company 1"
         assert manager.load(settings_path2)
         assert manager.settings.company.name == "Company 2 from inner directory"
+    
+    # Проверка на сравнение двух разных моделей склада
+    def test_equals_storage_model_create(self):
+        storage1 = StorageModel()
+        storage2 = StorageModel()
+
+        assert storage1 != storage2
+
+    # Проверка на сравнение двух моделей склада с одинаковым ID
+    def test_equals_storage_model_create(self):
+        storage1 = StorageModel()
+        storage2 = StorageModel()
+        storage2.id = storage1.id
+
+        assert storage1 == storage2
 
 
 if __name__ == "__main__":

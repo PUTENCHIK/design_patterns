@@ -4,10 +4,10 @@ from src.settings import Settings
 
 """
 TODO
-1. Метод convert - часть load с получением значений из файла
-2. Setting инкапсулирует CompanyModel
-3. В Settings только CompanyModel, а в CompanyModel все свойства и поля
-4. Задание делать в отдельной ветке, в конце Pull Request в master и в отклик - ссылка на Pull Request
+1. Счета, бик и инн - числа
+2. Валидация полей должна быть вынесена в отдельные функции
+3. Правильное оформление тестов (есть рекомендации Microsoft в репозитории преподавателя)
+4. Поля в settings.json могут задаваться как int/str
 """
 class SettingsManager:
     __instance = None
