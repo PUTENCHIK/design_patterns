@@ -1,4 +1,3 @@
-from __future__ import annotations
 from src.core.abstract_model import AbstractModel
 from src.models.company_model import CompanyModel
 

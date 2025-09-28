@@ -1,4 +1,3 @@
-from __future__ import annotations
 from typing import Optional
 from src.core.validator import Validator as vld
 from src.core.abstract_model import AbstractModel
@@ -27,21 +26,8 @@ class CompanyModel(AbstractModel):
     # Вид собственности (5 символов)
     __ownership: str = ""
 
-    def __init__(
-        self,
-        settings = None
-    ):
+    def __init__(self):
         super().__init__()
-        if settings is not None:
-            from src.models.settings_model import SettingsModel
-            
-            vld.validate(settings, SettingsModel, "settings")
-            self.name = settings.company.name
-            self.inn = settings.company.inn
-            self.account = settings.company.account
-            self.corr_account = settings.company.corr_account
-            self.bic = settings.company.bic
-            self.ownership = settings.company.ownership
 
     """Наименование организации"""
     @property

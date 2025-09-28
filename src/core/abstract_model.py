@@ -12,6 +12,9 @@ class AbstractModel(ABC):
     # Уникальный ID модели
     __unique_code: str
 
+    # Наименование модели (50)
+    __name: str = ""
+
     def __init__(self):
         super().__init__()
         self.__unique_code = uuid.uuid4().hex
@@ -25,6 +28,15 @@ class AbstractModel(ABC):
     def unique_code(self, value: str):
         vld.is_str(value, "unique_code")
         self.__unique_code = value.strip()
+    
+    """Наименование модели"""
+    @property
+    def name(self) -> str:
+        return self.__name
+    
+    @name.setter
+    def name(self, value: str):
+        vld.is_str(value, "name", len_=50)
     
     """Перегрузка оператора сравнения"""
     def __eq__(self, other: Union[str, Self]) -> bool:

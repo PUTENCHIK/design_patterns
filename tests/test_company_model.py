@@ -17,25 +17,6 @@ class TestCompanyModel(unittest.TestCase):
         assert model.corr_account is None
         assert model.bic is None
         assert model.ownership == ""
-    
-    # Инициализация компании через копирование полей из переданной
-    # модели настроек
-    def test_companymodel_init_with_settings_copied_all_fields(self):
-        # Подготовка
-        manager = SettingsManager()
-        file_name = "data/settings.json"
-        manager.load(file_name)
-
-        # Действие
-        company = CompanyModel(manager.settings)
-
-        # Проверка
-        company.name == "Danny MAD Entertainment"
-        company.inn == 385693061393
-        company.account == 34583289581
-        company.corr_account == 95847306800
-        company.bic == 458205943
-        company.ownership == "owner"
 
     # Присваивание полю name невалидных или пустных значений
     def test_companymodel_name_set_name_with_spaces_invalid_value(self):
