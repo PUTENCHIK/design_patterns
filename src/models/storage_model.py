@@ -1,36 +1,25 @@
-import uuid
 from typing import Self
+from src.core.validator import Validator as vld
+from src.core.abstract_model import AbstractModel
+from src.core.exceptions import WrongTypeException
 
 
-"""
-TODO
-1. Валидаторы для name
-2. Для модели с ID нужно добавить Abstract class
-"""
-class StorageModel:
-    __id: str
+"""Модель склада"""
+class StorageModel(AbstractModel):
+    # Наименование
     __name: str = ""
 
-    @property
-    def id(self) -> str:
-        return self.__id
-
-    @id.setter
-    def id(self, value: str):
-        self.__id = value
-
+    """Наименование склада"""
     @property
     def name(self) -> str:
         return self.__name
     
     @name.setter
     def name(self, value: str):
+        vld.is_str(value, "name")
         self.__name = value
     
-    def __init__(self):
-        self.id = uuid.uuid4()
-    
-    def __eq__(self, value: Self) -> bool:
-        if not isinstance(value, StorageModel):
-            raise TypeError("StorageModel could be compared only with StorageModel")
-        return self.id == value.id
+    """Перегрузка оператора стравнения склада с другим складом"""
+    def __eq__(self, other: Self) -> bool:
+        vld.validate(other, StorageModel, "other object")
+        return self.unique_code == other.unique_code

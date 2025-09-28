@@ -1,0 +1,61 @@
+from typing import Optional
+from src.core.abstract_model import AbstractModel
+from src.core.nomenclature_group import NomenclatureGroup
+from src.core.validator import Validator as vld
+from src.models.measure_unit_model import MeasureUnitModel
+
+
+"""Модель номенклатуры"""
+class NomenclatureModel(AbstractModel):
+    # Наименование (255)
+    __name: Optional[str] = None
+
+    # Группа номенклатуры
+    __group: Optional[NomenclatureGroup] = None
+
+    # Единица измерения
+    __measure_unit: Optional[MeasureUnitModel] = None
+
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        group: Optional[NomenclatureGroup] = None,
+        unit: Optional[MeasureUnitModel] = None,
+    ):
+        super().__init__()
+        if name is not None:
+            self.name = name
+        if group is not None:
+            self.group = group
+        if unit is not None:
+            self.measure_unit = unit
+
+    """Поле наименования"""
+    @property
+    def name(self) -> Optional[str]:
+        return self.__name
+    
+    @name.setter
+    def name(self, value: str):
+        vld.is_str(value, "name", len_=255)
+        self.__name = value.strip()
+    
+    """Поле группы номенклатуры"""
+    @property
+    def group(self) -> Optional[NomenclatureGroup]:
+        return self.__group
+    
+    @group.setter
+    def group(self, value: Optional[NomenclatureGroup]):
+        vld.validate(value, NomenclatureGroup, "group", True)
+        self.__group = value
+    
+    """Поле, хранящее объект единицы измерения"""
+    @property
+    def measure_unit(self) -> Optional[MeasureUnitModel]:
+        return self.__measure_unit
+    
+    @measure_unit.setter
+    def measure_unit(self, value: Optional[MeasureUnitModel]):
+        vld.validate(value, MeasureUnitModel, "measure_unit", True)
+        self.__measure_unit = value

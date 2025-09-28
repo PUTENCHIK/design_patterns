@@ -1,88 +1,120 @@
-class CompanyModel:
-    __name: str = ""            # Наименование
-    __inn: str = ""             # ИНН (12)
-    __account: str = ""         # Счёт (11)
-    __corr_account: str = ""    # Корреспондентский счет (11)
-    __bik: str = ""             # БИК (9)
-    __ownership: str = ""       # Вид собственности (5)
+from __future__ import annotations
+from typing import Optional
+from src.core.validator import Validator as vld
+from src.core.abstract_model import AbstractModel
 
+
+"""Модель компании
+
+Предназначена для хранения данных об организации
+"""
+class CompanyModel(AbstractModel):
+    # Наименование организации
+    __name: str = ""
+
+    # ИНН (12 символов)
+    __inn: Optional[int] = None
+
+    # Счёт (11 символов)
+    __account: Optional[int] = None
+
+    # Корреспондентский счет (11 символов)
+    __corr_account: Optional[int] = None
+
+    # БИК (9 символов)
+    __bic: Optional[int] = None
+
+    # Вид собственности (5 символов)
+    __ownership: str = ""
+
+    def __init__(
+        self,
+        settings = None
+    ):
+        super().__init__()
+        if settings is not None:
+            from src.models.settings_model import SettingsModel
+            
+            vld.validate(settings, SettingsModel, "settings")
+            self.name = settings.company.name
+            self.inn = settings.company.inn
+            self.account = settings.company.account
+            self.corr_account = settings.company.corr_account
+            self.bic = settings.company.bic
+            self.ownership = settings.company.ownership
+
+    """Наименование организации"""
     @property
     def name(self) -> str:
         return self.__name
     
     @name.setter
     def name(self, value: str):
-        if not isinstance(value, str):
-            raise TypeError("Field 'name' must be string")
-        value = value.strip()
-        if not value:
-            raise ValueError("")
+        vld.is_str(value, "name")
         self.__name = value
     
+    """ИНН организации"""
     @property
-    def inn(self) -> str:
+    def inn(self) -> Optional[int]:
         return self.__inn
     
     @inn.setter
-    def inn(self, value: str):
-        if not isinstance(value, str):
-            raise TypeError("Field 'inn' must be string")
-        value = value.strip()
-        if len(value) != 12 or not value.isdigit():
-            raise ValueError("")
+    def inn(self, value: Optional[int]):
+        vld.is_positive_int(value=value,
+                            field_name="inn",
+                            could_be_none=True,
+                            len_=12,
+                            strictly_len=True)
         self.__inn = value
 
+    """Номер счёта компании"""
     @property
-    def account(self) -> str:
+    def account(self) -> Optional[int]:
         return self.__account
     
     @account.setter
-    def account(self, value: str):
-        if not isinstance(value, str):
-            raise TypeError("Field 'account' must be string")
-        value = value.strip()
-        if len(value) != 11 or not value.isdigit():
-            raise ValueError("")
+    def account(self, value: Optional[int]):
+        vld.is_positive_int(value=value,
+                            field_name="account",
+                            could_be_none=True,
+                            len_=11,
+                            strictly_len=True)
         self.__account = value
 
+    """Корреспондентский счёт"""
     @property
-    def corr_account(self) -> str:
+    def corr_account(self) -> Optional[int]:
         return self.__corr_account
     
     @corr_account.setter
-    def corr_account(self, value: str):
-        if not isinstance(value, str):
-            raise TypeError("Field 'corr_account' must be string")
-        value = value.strip()
-        if len(value) != 11 or not value.isdigit():
-            raise ValueError("")
+    def corr_account(self, value: Optional[int]):
+        vld.is_positive_int(value=value,
+                            field_name="corr_account",
+                            could_be_none=True,
+                            len_=11,
+                            strictly_len=True)
         self.__corr_account = value
 
+    """БИК компании"""
     @property
-    def bik(self) -> str:
-        return self.__bik
+    def bic(self) -> Optional[int]:
+        return self.__bic
     
-    @bik.setter
-    def bik(self, value: str):
-        if not isinstance(value, str):
-            raise TypeError("Field 'bik' must be string")
-        value = value.strip()
-        if len(value) != 9 or not value.isdigit():
-            raise ValueError("")
-        self.__bik = value
+    @bic.setter
+    def bic(self, value: Optional[int]):
+        vld.is_positive_int(value=value,
+                            field_name="bic",
+                            could_be_none=True,
+                            len_=9,
+                            strictly_len=True)
+        self.__bic = value
 
+    """Вид собственности"""
     @property
     def ownership(self) -> str:
         return self.__ownership
     
     @ownership.setter
     def ownership(self, value: str):
-        if not isinstance(value, str):
-            raise TypeError("Field 'ownership' must be string")
-        value = value.strip()
-        if len(value) != 5:
-            raise ValueError("")
+        vld.is_str(value, "ownership", len_=5)
         self.__ownership = value
-
-    def __init__(self):
-        pass
