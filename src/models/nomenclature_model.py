@@ -1,8 +1,8 @@
 from typing import Optional
 from src.core.abstract_model import AbstractModel
-from src.core.nomenclature_group import NomenclatureGroup
 from src.core.validator import Validator as vld
 from src.models.measure_unit_model import MeasureUnitModel
+from src.models.nomenclature_group_model import NomenclatureGroupModel
 
 
 """Модель номенклатуры"""
@@ -11,7 +11,7 @@ class NomenclatureModel(AbstractModel):
     __name: Optional[str] = None
 
     # Группа номенклатуры
-    __group: Optional[NomenclatureGroup] = None
+    __group: Optional[NomenclatureGroupModel] = None
 
     # Единица измерения
     __measure_unit: Optional[MeasureUnitModel] = None
@@ -19,7 +19,7 @@ class NomenclatureModel(AbstractModel):
     def __init__(
         self,
         name: Optional[str] = None,
-        group: Optional[NomenclatureGroup] = None,
+        group: Optional[NomenclatureGroupModel] = None,
         unit: Optional[MeasureUnitModel] = None,
     ):
         super().__init__()
@@ -42,12 +42,12 @@ class NomenclatureModel(AbstractModel):
     
     """Поле группы номенклатуры"""
     @property
-    def group(self) -> Optional[NomenclatureGroup]:
+    def group(self) -> Optional[NomenclatureGroupModel]:
         return self.__group
     
     @group.setter
-    def group(self, value: Optional[NomenclatureGroup]):
-        vld.validate(value, NomenclatureGroup, "group", True)
+    def group(self, value: Optional[NomenclatureGroupModel]):
+        vld.validate(value, NomenclatureGroupModel, "group", True)
         self.__group = value
     
     """Поле, хранящее объект единицы измерения"""

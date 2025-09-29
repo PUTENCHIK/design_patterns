@@ -37,6 +37,7 @@ class AbstractModel(ABC):
     @name.setter
     def name(self, value: str):
         vld.is_str(value, "name", len_=50)
+        self.__name = value.strip()
     
     """Перегрузка оператора сравнения"""
     def __eq__(self, other: Union[str, Self]) -> bool:

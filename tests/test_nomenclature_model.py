@@ -1,8 +1,8 @@
 import unittest
 from src.core.exceptions import WrongTypeException, InvalidValueException
-from src.core.nomenclature_group import NomenclatureGroup
 from src.models.nomenclature_model import NomenclatureModel
 from src.models.measure_unit_model import MeasureUnitModel
+from src.models.nomenclature_group_model import NomenclatureGroupModel
 
 
 class TestNomenclatureModel(unittest.TestCase):
@@ -11,7 +11,7 @@ class TestNomenclatureModel(unittest.TestCase):
     def test_nomenclaturemodel_init_valid_fields_no_exceptions(self):
         # Подготовка
         name = "Мука"
-        group = NomenclatureGroup.GROCERY
+        group = NomenclatureGroupModel("сырьё")
         base_unit = MeasureUnitModel(1, "грамм")
         unit = MeasureUnitModel(1000, "кг", base_unit)
 
