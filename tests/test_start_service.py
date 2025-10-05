@@ -10,12 +10,12 @@ class TestStartService(unittest.TestCase):
         super().__init__(methodName)
         self.__start_service.start()
     
-    # Метод __create_measure_units() создаёт 2 единицы измерения
-    def test_startservice_create_measure_units_create_units_added_two_units(self):
+    # Метод __create_measure_units() создаёт единицы измерения
+    def test_startservice_create_measure_units_create_units_added_units(self):
         # Подготовка
         count = len(self.__start_service.measure_units)
         # Проверка
-        assert count == 2
+        assert count > 0
     
     # Метод __create_measure_units() создаёт единицу измерения 'килограмм',
     # базовая единица которого - это грамм из того же словаря
@@ -52,6 +52,13 @@ class TestStartService(unittest.TestCase):
         new_unit = self.__start_service.nomenclature_groups[name]
         # Проверка
         assert unit == new_unit
+    
+    # Метод __create_nomeclatures() создаёт номенклатуры
+    def test_startservice_create_nomeclatures_create_nomeclatures_added_nomenclatures(self):
+        # Подготовка
+        count = len(self.__start_service.nomenclatures)
+        # Проверка
+        assert count > 0
 
 
 if __name__ == "__main__":

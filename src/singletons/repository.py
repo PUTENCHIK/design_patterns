@@ -8,6 +8,12 @@ class Repository:
 
     # Ключ для групп номенклатуры
     nomenclature_group_key: str = "nomenclature_groups"
+    
+    # Ключ для номенклатур
+    nomenclatures_key: str = "nomenclatures"
+
+    # Ключ для рецептов
+    recipes_key: str = "recipes"
 
     """Словарь с эталонными объектами приложения"""
     @property
@@ -20,6 +26,9 @@ class Repository:
         return {
             "gramm": "гр",
             "kilo": "кг",
+            "milliliter": "мл",
+            "egg": "яйцо",
+            "sausage": "сосиска",
         }
     
     """Наименования групп номенклатуры"""

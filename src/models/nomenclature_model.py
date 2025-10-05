@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Self
 from src.core.abstract_model import AbstractModel
 from src.core.validator import Validator as vld
 from src.models.measure_unit_model import MeasureUnitModel
@@ -59,3 +59,52 @@ class NomenclatureModel(AbstractModel):
     def measure_unit(self, value: Optional[MeasureUnitModel]):
         vld.validate(value, MeasureUnitModel, "measure_unit", True)
         self.__measure_unit = value
+    
+    """Универсальный фабричный метод"""
+    @staticmethod
+    def create(
+        name: Optional[str] = None,
+        group: Optional[NomenclatureGroupModel] = None,
+        unit: Optional[MeasureUnitModel] = None,
+    ) -> Self:
+        return NomenclatureModel(name, group, unit)
+    
+    """Фабричный метод для номенклатуры 'Яйца', шт"""
+    @staticmethod
+    def create_eggs(
+        group: NomenclatureGroupModel,
+        unit: MeasureUnitModel
+    ) -> Self:
+        return NomenclatureModel.create("Яйца", group, unit)
+
+    """Фабричный метод для номенклатуры 'Подсолнечное масло', мл"""
+    @staticmethod
+    def create_sunflower_oil(
+        group: NomenclatureGroupModel,
+        unit: MeasureUnitModel
+    ) -> Self:
+        return NomenclatureModel.create("Подсолнечное масло", group, unit)
+    
+    """Фабричный метод для номенклатуры 'Молоко', мл"""
+    @staticmethod
+    def create_milk(
+        group: NomenclatureGroupModel,
+        unit: MeasureUnitModel
+    ) -> Self:
+        return NomenclatureModel.create("Молоко", group, unit)
+    
+    """Фабричный метод для номенклатуры 'Сосиски', шт"""
+    @staticmethod
+    def create_sausages(
+        group: NomenclatureGroupModel,
+        unit: MeasureUnitModel
+    ) -> Self:
+        return NomenclatureModel.create("Сосиски", group, unit)
+    
+    """Фабричный метод для номенклатуры 'Соль', гр"""
+    @staticmethod
+    def create_salt(
+        group: NomenclatureGroupModel,
+        unit: MeasureUnitModel
+    ) -> Self:
+        return NomenclatureModel.create("Соль", group, unit)
