@@ -1,5 +1,5 @@
 import uuid
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Union, Self
 from src.core.validator import Validator as vld
 from src.core.exceptions import WrongTypeException
@@ -15,6 +15,7 @@ class AbstractModel(ABC):
     # Наименование модели (50)
     __name: str = ""
 
+    @abstractmethod
     def __init__(self):
         super().__init__()
         self.__unique_code = uuid.uuid4().hex

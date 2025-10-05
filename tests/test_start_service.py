@@ -1,0 +1,58 @@
+import unittest
+from src.singletons.repository import Repository
+from src.singletons.start_service import StartService
+
+
+class TestStartService(unittest.TestCase):
+    __start_service: StartService = StartService()
+
+    def __init__(self, methodName = "runTest"):
+        super().__init__(methodName)
+        self.__start_service.start()
+    
+    # Метод __create_measure_units() создаёт 2 единицы измерения
+    def test_startservice_create_measure_units_create_units_added_two_units(self):
+        # Подготовка
+        count = len(self.__start_service.measure_units)
+        # Проверка
+        assert count == 2
+    
+    # Метод __create_measure_units() создаёт единицу измерения 'килограмм',
+    # базовая единица которого - это грамм из того же словаря
+    def test_startservice_create_measure_units_create_units_kilo_contains_gramm(self):
+        # Подготовка
+        units = self.__start_service.measure_units
+        names = Repository.get_measure_unit_names()
+        gramm = units[names["gramm"]]
+        kilo = units[names["kilo"]]
+        # Проверка
+        assert kilo.base_unit == gramm
+    
+    # Повторный вызов метода start() не должен обновлять единицы измерения
+    def test_startservice_start_run_method_again_measure_units_are_same(self):
+        # Подготовка
+        names = Repository.get_measure_unit_names()
+        name1, name2 = names["gramm"], names["kilo"]
+        units = self.__start_service.measure_units
+        # Действие
+        self.__start_service.start()
+        new_units = self.__start_service.measure_units
+        # Проверка
+        assert units[name1] == new_units[name1]
+        assert units[name2] == new_units[name2]
+    
+    # Повторный вызов метода start() не должен обновлять группы номенклатур
+    def test_startservice_start_run_method_again_nomenclature_groups_are_same(self):
+        # Подготовка
+        names = Repository.get_nomenclature_group_names()
+        name = names["raw_material"]
+        unit = self.__start_service.nomenclature_groups[name]
+        # Действие
+        self.__start_service.start()
+        new_unit = self.__start_service.nomenclature_groups[name]
+        # Проверка
+        assert unit == new_unit
+
+
+if __name__ == "__main__":
+    unittest.main()

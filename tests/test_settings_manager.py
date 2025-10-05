@@ -1,5 +1,5 @@
 import unittest
-from src.settings_manager import SettingsManager
+from src.singletons.settings_manager import SettingsManager
 
 
 class TestSettingsManager(unittest.TestCase):
