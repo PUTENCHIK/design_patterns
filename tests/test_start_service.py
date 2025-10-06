@@ -1,6 +1,8 @@
 import unittest
+from src.core.exceptions import WrongTypeException
 from src.singletons.repository import Repository
 from src.singletons.start_service import StartService
+from src.models.nomenclature_model import NomenclatureModel
 
 
 class TestStartService(unittest.TestCase):
@@ -59,6 +61,38 @@ class TestStartService(unittest.TestCase):
         count = len(self.__start_service.nomenclatures)
         # Проверка
         assert count > 0
+    
+    # Метод get_nomenclature() возвращает номенклатуру при передаче
+    # имени существующего объекта
+    def test_startservice_get_nomenclature_pass_existing_name_returns_object(self):
+        # Подготовка
+        name = "Курица"
+        self.__start_service.data[Repository.nomenclatures_key].append(
+            NomenclatureModel(name)
+        )
+        # Действие
+        eggs = self.__start_service.get_nomenclature("Яйца")
+        chicken = self.__start_service.get_nomenclature(name)
+        # Проверка
+        assert isinstance(eggs, NomenclatureModel)
+        assert isinstance(chicken, NomenclatureModel)
+    
+    # Метод get_nomenclature() возвращает None при передаче имени
+    # несуществующего объекта
+    def test_startservice_get_nomenclature_pass_not_existing_name_returns_none(self):
+        # Подготовка
+        name = "Несуществующий продукт"
+        # Действие
+        chicken = self.__start_service.get_nomenclature(name)
+        # Проверка
+        assert chicken is None
+    
+    # Метод get_nomenclature() бросает исключение при передаче
+    # невалидного значения имени
+    def test_startservice_get_nomenclature_pass_invalid_name_raises_exception(self):
+        # Проверка
+        with self.assertRaises(WrongTypeException):
+            self.__start_service.get_nomenclature(0)
 
 
 if __name__ == "__main__":

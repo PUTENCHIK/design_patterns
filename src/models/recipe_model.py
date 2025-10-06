@@ -14,8 +14,13 @@ class RecipeModel(AbstractModel):
     # Список ингредиентов блюда
     __ingredients: List[Tuple[NomenclatureModel, int]] = list()
 
-    def __init__(self):
+    def __init__(
+        self,
+        name: Optional[str] = None
+    ):
         super().__init__()
+        if name is not None:
+            self.name = name
     
     """Поле текстового описания рецепта"""
     @property

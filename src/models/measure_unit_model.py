@@ -75,17 +75,3 @@ class MeasureUnitModel(AbstractModel):
         return MeasureUnitModel.create(
             1, Repository.get_measure_unit_names()["milliliter"]
         )
-    
-    """Фабричный метод для создания яйца"""
-    @staticmethod
-    def create_egg(inner_gramm: Self) -> Self:
-        return MeasureUnitModel.create(
-            75, Repository.get_measure_unit_names()["egg"], inner_gramm
-        )
-
-    """Фабричный метод для создания сосиски"""
-    @staticmethod
-    def create_sausage(inner_gramm: Self) -> Self:
-        return MeasureUnitModel.create(
-            40, Repository.get_measure_unit_names()["sausage"], inner_gramm
-        )

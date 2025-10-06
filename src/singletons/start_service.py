@@ -1,4 +1,5 @@
 from typing import Optional, List, Dict
+from src.core.validator import Validator as vld
 from src.models.recipe_model import RecipeModel
 from src.models.measure_unit_model import MeasureUnitModel
 from src.models.nomenclature_model import NomenclatureModel
@@ -37,11 +38,12 @@ class StartService:
 
     """Метод генерации эталонных единиц измерения"""
     def __create_measure_units(self):
+        names = Repository.get_measure_unit_names()
         gramm = MeasureUnitModel.create_gramm()
         milliliter = MeasureUnitModel.create_milliliter()
         kilo = MeasureUnitModel.create_kilo(gramm)
-        egg = MeasureUnitModel.create_egg(gramm)
-        sausage = MeasureUnitModel.create_sausage(gramm)
+        egg = MeasureUnitModel(75, names["egg"], gramm)
+        sausage = MeasureUnitModel(75, names["sausage"], gramm)
         if gramm.name not in self.measure_units:
             self.measure_units[gramm.name] = gramm
         if kilo.name not in self.measure_units:
@@ -99,6 +101,16 @@ class StartService:
         self.nomenclatures.append(milk)
         self.nomenclatures.append(sausages)
         self.nomenclatures.append(salt)
+
+    """Метод получения номенклатуры по имени"""
+    def get_nomenclature(self, name: str) -> Optional[NomenclatureModel]:
+        vld.is_str(name, "nomenclature name")
+
+        for nom in self.data[Repository.nomenclatures_key]:
+            if nom.name == name:
+                return nom
+        
+        return None
     
     """Список рецептов"""
     @property
@@ -107,13 +119,18 @@ class StartService:
 
     """Метод добавления рецептов"""
     def __create_recipes(self):
-        omelette = RecipeModel.create_omlette_recipe(
-            self.nomenclatures[0],
-            self.nomenclatures[1],
-            self.nomenclatures[2],
-            self.nomenclatures[3],
-            self.nomenclatures[4],
-        )
+        omelette = RecipeModel("Омлет")
+        eggs = self.get_nomenclature("Яйца")
+        sunflower_oil = self.get_nomenclature("Подсолнечное масло")
+        milk = self.get_nomenclature("Молоко")
+        sausages = self.get_nomenclature("Сосиски")
+        salt = self.get_nomenclature("Соль")
+
+        omelette.add_ingredient(eggs, 3)
+        omelette.add_ingredient(sunflower_oil, 10)
+        omelette.add_ingredient(milk, 200)
+        omelette.add_ingredient(sausages, 1)
+        omelette.add_ingredient(salt, 5)
         self.recipes.append(omelette)
     
     """Метод вызова методов генерации эталонных данных"""
