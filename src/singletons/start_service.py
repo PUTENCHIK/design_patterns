@@ -126,11 +126,11 @@ class StartService:
         sausages = self.get_nomenclature("Сосиски")
         salt = self.get_nomenclature("Соль")
 
-        omelette.add_ingredient(eggs, 3)
-        omelette.add_ingredient(sunflower_oil, 10)
-        omelette.add_ingredient(milk, 200)
-        omelette.add_ingredient(sausages, 1)
-        omelette.add_ingredient(salt, 5)
+        omelette.ingredients.append((eggs, 3))
+        omelette.ingredients.append((sunflower_oil, 10))
+        omelette.ingredients.append((milk, 200))
+        omelette.ingredients.append((sausages, 1))
+        omelette.ingredients.append((salt, 5))
         self.recipes.append(omelette)
     
     """Метод вызова методов генерации эталонных данных"""
