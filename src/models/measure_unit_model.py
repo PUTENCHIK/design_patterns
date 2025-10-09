@@ -1,6 +1,7 @@
 from typing import Optional, Self, Union
 from src.core.abstract_model import AbstractModel
 from src.core.validator import Validator as vld
+from src.singletons.repository import Repository
 
 
 """Модель единиц измерения для моделей номенклатуры"""
@@ -8,15 +9,14 @@ class MeasureUnitModel(AbstractModel):
     # Коэффициент пересчёта
     __coefficient: float = 0.0
 
-    # Наименование
-    __name: str = ""
+    # Наименование (наследуется от AbstractModel)
 
     # Базовая единица измерения
     __base_unit: Optional[Self] = None
     
     def __init__(
         self,
-        coef: float,
+        coef: Union[int, float],
         name: str,
         base_unit: Optional[Self] = None
     ):
@@ -35,16 +35,6 @@ class MeasureUnitModel(AbstractModel):
         vld.is_number(value, "unit coefficient")
         self.__coefficient = float(value)
     
-    """Наименование единицы измерения"""
-    @property
-    def name(self) -> str:
-        return self.__name
-    
-    @name.setter
-    def name(self, value: str):
-        vld.is_str(value, "measure unit's name")
-        self.__name = value.strip()
-    
     """Базовая единица измерения"""
     @property
     def base_unit(self) -> Self:
@@ -55,3 +45,33 @@ class MeasureUnitModel(AbstractModel):
         vld.validate(value, MeasureUnitModel,
                      "base_unit", could_be_none=True)
         self.__base_unit = value
+
+    """Универсальный фабричный метод"""
+    @staticmethod
+    def create(
+        coef: Union[int, float],
+        name: str,
+        base_unit: Optional[Self] = None
+    ) -> Self:
+        return MeasureUnitModel(coef, name, base_unit)
+    
+    """Фабричный метод для создания грамма"""
+    @staticmethod
+    def create_gramm() -> Self:
+        return MeasureUnitModel.create(
+            1, Repository.get_measure_unit_names()["gramm"]
+        )
+    
+    """Фабричный метод для создания килограмма"""
+    @staticmethod
+    def create_kilo(inner_gramm: Self) -> Self:
+        return MeasureUnitModel.create(
+            1000, Repository.get_measure_unit_names()["kilo"], inner_gramm
+        )
+
+    """Фабричный метод для создания миллилитра"""
+    @staticmethod
+    def create_milliliter() -> Self:
+        return MeasureUnitModel.create(
+            1, Repository.get_measure_unit_names()["milliliter"]
+        )

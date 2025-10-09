@@ -8,8 +8,7 @@ from src.core.abstract_model import AbstractModel
 Предназначена для хранения данных об организации
 """
 class CompanyModel(AbstractModel):
-    # Наименование организации
-    __name: str = ""
+    # Наименование организации (наследуется от AbstractModel)
 
     # ИНН (12 символов)
     __inn: Optional[int] = None
@@ -28,16 +27,6 @@ class CompanyModel(AbstractModel):
 
     def __init__(self):
         super().__init__()
-
-    """Наименование организации"""
-    @property
-    def name(self) -> str:
-        return self.__name
-    
-    @name.setter
-    def name(self, value: str):
-        vld.is_str(value, "name")
-        self.__name = value
     
     """ИНН организации"""
     @property
