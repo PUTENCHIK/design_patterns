@@ -1,7 +1,6 @@
 import unittest
 from src.core.exceptions import InvalidValueException, WrongTypeException
 from src.models.company_model import CompanyModel
-from src.singletons.settings_manager import SettingsManager
 
 
 class TestCompanyModel(unittest.TestCase):

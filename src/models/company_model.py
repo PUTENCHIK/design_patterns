@@ -1,6 +1,6 @@
 from typing import Optional
-from src.core.validator import Validator as vld
 from src.core.abstract_model import AbstractModel
+from src.core.validator import Validator as vld
 
 
 """Модель компании

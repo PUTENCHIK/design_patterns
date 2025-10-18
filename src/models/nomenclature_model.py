@@ -1,8 +1,10 @@
 from typing import Optional, Self
-from src.core.abstract_model import AbstractModel
 from src.core.validator import Validator as vld
+from src.core.abstract_model import AbstractModel
+from src.dtos.nomenclature_dto import NomenclatureDto
 from src.models.measure_unit_model import MeasureUnitModel
 from src.models.nomenclature_group_model import NomenclatureGroupModel
+from src.singletons.repository import Repository
 
 
 """Модель номенклатуры"""
@@ -69,42 +71,12 @@ class NomenclatureModel(AbstractModel):
     ) -> Self:
         return NomenclatureModel(name, group, unit)
     
-    """Фабричный метод для номенклатуры 'Яйца', шт"""
-    @staticmethod
-    def create_eggs(
-        group: NomenclatureGroupModel,
-        unit: MeasureUnitModel
-    ) -> Self:
-        return NomenclatureModel.create("Яйца", group, unit)
-
-    """Фабричный метод для номенклатуры 'Подсолнечное масло', мл"""
-    @staticmethod
-    def create_sunflower_oil(
-        group: NomenclatureGroupModel,
-        unit: MeasureUnitModel
-    ) -> Self:
-        return NomenclatureModel.create("Подсолнечное масло", group, unit)
-    
-    """Фабричный метод для номенклатуры 'Молоко', мл"""
-    @staticmethod
-    def create_milk(
-        group: NomenclatureGroupModel,
-        unit: MeasureUnitModel
-    ) -> Self:
-        return NomenclatureModel.create("Молоко", group, unit)
-    
-    """Фабричный метод для номенклатуры 'Сосиски', шт"""
-    @staticmethod
-    def create_sausages(
-        group: NomenclatureGroupModel,
-        unit: MeasureUnitModel
-    ) -> Self:
-        return NomenclatureModel.create("Сосиски", group, unit)
-    
-    """Фабричный метод для номенклатуры 'Соль', гр"""
-    @staticmethod
-    def create_salt(
-        group: NomenclatureGroupModel,
-        unit: MeasureUnitModel
-    ) -> Self:
-        return NomenclatureModel.create("Соль", group, unit)
+    """Фабричный метод из DTO"""
+    def from_dto(dto: NomenclatureDto, repo: Repository) -> Self:
+        group = repo.get(dto.group)
+        unit = repo.get(dto.measure_unit)
+        return NomenclatureModel(
+            name=dto.name,
+            group=group,
+            unit=unit,
+        )

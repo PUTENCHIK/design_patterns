@@ -1,98 +1,82 @@
 import unittest
-from src.core.exceptions import WrongTypeException
-from src.singletons.repository import Repository
 from src.singletons.start_service import StartService
-from src.models.nomenclature_model import NomenclatureModel
+from src.models.recipe_model import RecipeModel
 
 
 class TestStartService(unittest.TestCase):
+    # Путь до файла с тестовыми настройками
+    __file_name: str = "tests/data/settings_models.json"
+
+    # Объект сервиса
     __start_service: StartService = StartService()
 
     def __init__(self, methodName = "runTest"):
         super().__init__(methodName)
-        self.__start_service.start()
+        self.__start_service.start(self.__file_name)
     
-    # Метод __create_measure_units() создаёт единицы измерения
-    def test_startservice_create_measure_units_create_units_added_units(self):
+    # Метод load() загружает 5 единиц измерения
+    def test_startservice_load_load_units_added_5_units(self):
         # Подготовка
         count = len(self.__start_service.measure_units)
         # Проверка
-        assert count > 0
+        assert count == 5
     
-    # Метод __create_measure_units() создаёт единицу измерения 'килограмм',
+    # Метод load() загружает единицу измерения 'килограмм',
     # базовая единица которого - это грамм из того же словаря
-    def test_startservice_create_measure_units_create_units_kilo_contains_gramm(self):
+    def test_startservice_load_create_units_kilo_contains_gramm(self):
         # Подготовка
-        units = self.__start_service.measure_units
-        names = Repository.get_measure_unit_names()
-        gramm = units[names["gramm"]]
-        kilo = units[names["kilo"]]
+        gramm = self.__start_service.repository.get("грамм")
+        kilo = self.__start_service.repository.get("килограмм")
         # Проверка
         assert kilo.base_unit == gramm
     
     # Повторный вызов метода start() не должен обновлять единицы измерения
     def test_startservice_start_run_method_again_measure_units_are_same(self):
         # Подготовка
-        names = Repository.get_measure_unit_names()
-        name1, name2 = names["gramm"], names["kilo"]
-        units = self.__start_service.measure_units
+        name1, name2 = "грамм", "килограмм"
+        gramm1 = self.__start_service.repository.get(name1)
+        kilo1 = self.__start_service.repository.get(name2)
         # Действие
-        self.__start_service.start()
-        new_units = self.__start_service.measure_units
+        self.__start_service.start(self.__file_name)
+        gramm2 = self.__start_service.repository.get(name1)
+        kilo2 = self.__start_service.repository.get(name2)
         # Проверка
-        assert units[name1] == new_units[name1]
-        assert units[name2] == new_units[name2]
+        assert gramm1 == gramm2
+        assert kilo1 == kilo2
     
     # Повторный вызов метода start() не должен обновлять группы номенклатур
     def test_startservice_start_run_method_again_nomenclature_groups_are_same(self):
         # Подготовка
-        names = Repository.get_nomenclature_group_names()
-        name = names["raw_material"]
-        unit = self.__start_service.nomenclature_groups[name]
+        name = "ингредиенты"
+        unit = self.__start_service.repository.get(name)
         # Действие
-        self.__start_service.start()
-        new_unit = self.__start_service.nomenclature_groups[name]
+        self.__start_service.start(self.__file_name)
+        new_unit = self.__start_service.repository.get(name)
         # Проверка
         assert unit == new_unit
     
-    # Метод __create_nomeclatures() создаёт номенклатуры
-    def test_startservice_create_nomeclatures_create_nomeclatures_added_nomenclatures(self):
+    # Метод load() загружает 5 номенклатур
+    def test_startservice_load_load_nomeclatures_added_5_nomenclatures(self):
         # Подготовка
         count = len(self.__start_service.nomenclatures)
         # Проверка
-        assert count > 0
+        assert count == 5
     
-    # Метод get_nomenclature() возвращает номенклатуру при передаче
-    # имени существующего объекта
-    def test_startservice_get_nomenclature_pass_existing_name_returns_object(self):
+    # Проверить рецепт омлета, загруженного из файла
+    def test_startservice_load_check_omelette_recipe_all_fields_are_models(self):
         # Подготовка
-        name = "Курица"
-        self.__start_service.data[Repository.nomenclatures_key].append(
-            NomenclatureModel(name)
-        )
-        # Действие
-        eggs = self.__start_service.get_nomenclature("Яйца")
-        chicken = self.__start_service.get_nomenclature(name)
+        omelette = self.__start_service.repository.get("омлет")
+        
         # Проверка
-        assert isinstance(eggs, NomenclatureModel)
-        assert isinstance(chicken, NomenclatureModel)
-    
-    # Метод get_nomenclature() возвращает None при передаче имени
-    # несуществующего объекта
-    def test_startservice_get_nomenclature_pass_not_existing_name_returns_none(self):
-        # Подготовка
-        name = "Несуществующий продукт"
-        # Действие
-        chicken = self.__start_service.get_nomenclature(name)
-        # Проверка
-        assert chicken is None
-    
-    # Метод get_nomenclature() бросает исключение при передаче
-    # невалидного значения имени
-    def test_startservice_get_nomenclature_pass_invalid_name_raises_exception(self):
-        # Проверка
-        with self.assertRaises(WrongTypeException):
-            self.__start_service.get_nomenclature(0)
+        assert isinstance(omelette, RecipeModel)
+        for ingredient in omelette.ingredients:
+            name = ingredient.nomenclature.name
+            repo_nomenclature = self.__start_service.repository.get(name)
+            assert repo_nomenclature == ingredient.nomenclature
+
+            name = ingredient.measure_unit.name
+            repo_unit = self.__start_service.repository.get(name)
+            assert repo_unit == ingredient.measure_unit
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 import json
 import pathlib
-from src.models.settings_model import SettingsModel
 from src.core.validator import Validator as vld
 from src.core.exceptions import WrongTypeException
+from src.models.settings_model import SettingsModel
 
 
 """Менеджер настроек
@@ -34,14 +34,7 @@ class SettingsManager:
 
     @file_name.setter
     def file_name(self, value: str):
-        if not isinstance(value, str):
-            raise WrongTypeException("Settings file name must be string")
-        value = value.strip()
-        if not value:
-            raise WrongTypeException("Settings file name can't be empty")
-        if not pathlib.Path(value).exists():
-            raise FileNotFoundError(f"No such file: {value}")
-        self.__file_name = str(pathlib.Path(value).absolute())
+        self.__file_name = vld.is_file_exists(value)
     
     """Настройки с хранящейся моделью компании"""
     @property
@@ -50,8 +43,8 @@ class SettingsManager:
 
     @settings.setter
     def settings(self, value: SettingsModel):
-        if isinstance(value, SettingsModel):
-            self.__settings = value
+        vld.validate(value, SettingsModel, "settings")
+        self.__settings = value
     
     """Метод загрузки файла настроек"""
     def load(self, file_name: str) -> bool:
