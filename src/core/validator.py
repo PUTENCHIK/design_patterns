@@ -1,6 +1,8 @@
+import pathlib
 from typing import Optional, Any, Union, Type, List, Tuple
-from src.core.exceptions import (InvalidValueException, WrongTypeException,
-                                 ParamException)
+from src.core.exceptions import (
+    InvalidValueException, WrongTypeException, ParamException
+)
 
 
 """Вспомогательный класс для валидации полей и объектов"""
@@ -19,7 +21,7 @@ class Validator:
             представления значения. По-умолчанию False.
         strictly_len (bool, optional): строго ли длина значения
             дожна быть = параметру len_, или может быть <=.
-            По-умолчанию False.
+            По умолчанию False.
     
     Returns:
         bool: True если поле прошло валидацию по типу и значению,
@@ -64,7 +66,7 @@ class Validator:
         elif isinstance(types, type):
             if not isinstance(value, types) or type(value) is not types:
                 raise WrongTypeException(
-                    f"'{field_name}' is {type(value).__name__}, not {types}"
+                    f"'{field_name}' is {type(value).__name__}, not {types.__name__}"
                 )
         else:
             raise ParamException(
@@ -90,7 +92,7 @@ class Validator:
     """Метод проверки на строку"""
     @staticmethod
     def is_str(
-        value: Any,
+        value: str,
         field_name: str,
         could_be_none: bool = False,
         len_: Optional[int] = None,
@@ -102,7 +104,7 @@ class Validator:
     """Метод проверки на целочисленное значение"""
     @staticmethod
     def is_int(
-        value: Any,
+        value: int,
         field_name: str,
         could_be_none: bool = False,
         len_: Optional[int] = None,
@@ -112,8 +114,9 @@ class Validator:
                                   could_be_none, len_, strictly_len)
     
     """Метод проверки на положительное целое число"""
+    @staticmethod
     def is_positive_int(
-        value: Any,
+        value: int,
         field_name: str,
         could_be_none: bool = False,
         len_: Optional[int] = None,
@@ -124,15 +127,18 @@ class Validator:
         return result if could_be_none else value > 0
     
     """Метод проверки на словарь"""
+    @staticmethod
     def is_dict(
-        value: Any,
+        value: dict,
         field_name: str,
+        could_be_none: bool = False
     ) -> bool:
-        return Validator.validate(value, dict, field_name)
+        return Validator.validate(value, dict, field_name, could_be_none)
 
     """Метод проверки на число с плавающей точкой"""
+    @staticmethod
     def is_float(
-        value: Any,
+        value: float,
         field_name: str,
         could_be_none: bool = False,
         len_: Optional[int] = None,
@@ -142,8 +148,9 @@ class Validator:
                                   could_be_none, len_, strictly_len)
     
     """Метод проверки на число (целое или с плавающей точкой)"""
+    @staticmethod
     def is_number(
-        value: Any,
+        value: Union[int, float],
         field_name: str,
         could_be_none: bool = False,
         len_: Optional[int] = None,
@@ -151,3 +158,56 @@ class Validator:
     ) -> bool:
         return Validator.validate(value, (int, float), field_name,
                                   could_be_none, len_, strictly_len)
+    
+    """Метод проверки на список"""
+    @staticmethod
+    def is_list(
+        value: list,
+        field_name: str,
+        could_be_none: bool = False,
+    ) -> bool:
+        return Validator.validate(value, list, field_name, could_be_none)
+    
+    """Метод проверки на список и того, что все его элементы одного типа"""
+    def is_list_of(
+        value: list,
+        types: Union[Type, List[Type], Tuple[Type]],
+        field_name: str,
+        could_item_be_none: bool = False
+    ) -> bool:
+        Validator.is_list(value, field_name)
+        for item in value:
+            Validator.validate(item, types, f"item of {field_name}",
+                               could_item_be_none)
+        return True
+    
+    """Метод проверки на существование файла
+    
+    Args:
+        file_name (str): строка, валидируемая как путь к файлу
+
+    Returns:
+        str: абсолютный путь до файла
+    
+    Raises:
+        WrongTypeException: переданное значение не является строкой
+        InvalidValueException: пустая строка
+        FileNotFoundError: файла по указанному пути не найдено
+    """
+    @staticmethod
+    def is_file_exists(
+        file_name: str
+    ) -> str:
+        if not isinstance(file_name, str):
+            raise WrongTypeException(
+                f"File name '{file_name}' must be string"
+            )
+        file_name = file_name.strip()
+        if not file_name:
+            raise InvalidValueException(
+                f"File name '{file_name}' can't be empty"
+            )
+        if not pathlib.Path(file_name).exists():
+            raise FileNotFoundError(f"No such file: {file_name}")
+        
+        return str(pathlib.Path(file_name).absolute())

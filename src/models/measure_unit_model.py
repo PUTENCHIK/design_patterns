@@ -1,13 +1,14 @@
 from typing import Optional, Self, Union
 from src.core.abstract_model import AbstractModel
 from src.core.validator import Validator as vld
+from src.dtos.measure_unit_dto import MeasureUnitDto
 from src.singletons.repository import Repository
 
 
 """Модель единиц измерения для моделей номенклатуры"""
 class MeasureUnitModel(AbstractModel):
     # Коэффициент пересчёта
-    __coefficient: float = 0.0
+    __coefficient: float = 1.0
 
     # Наименование (наследуется от AbstractModel)
 
@@ -37,7 +38,7 @@ class MeasureUnitModel(AbstractModel):
     
     """Базовая единица измерения"""
     @property
-    def base_unit(self) -> Self:
+    def base_unit(self) -> Optional[Self]:
         return self.__base_unit
     
     @base_unit.setter
@@ -58,20 +59,25 @@ class MeasureUnitModel(AbstractModel):
     """Фабричный метод для создания грамма"""
     @staticmethod
     def create_gramm() -> Self:
-        return MeasureUnitModel.create(
-            1, Repository.get_measure_unit_names()["gramm"]
-        )
+        return MeasureUnitModel.create(1, "gramm")
     
     """Фабричный метод для создания килограмма"""
     @staticmethod
     def create_kilo(inner_gramm: Self) -> Self:
-        return MeasureUnitModel.create(
-            1000, Repository.get_measure_unit_names()["kilo"], inner_gramm
-        )
+        return MeasureUnitModel.create(1000, "kilo", inner_gramm)
 
     """Фабричный метод для создания миллилитра"""
     @staticmethod
     def create_milliliter() -> Self:
-        return MeasureUnitModel.create(
-            1, Repository.get_measure_unit_names()["milliliter"]
+        return MeasureUnitModel.create(1, "milliliter")
+    
+    """Фабричный метод из DTO"""
+    @staticmethod
+    def from_dto(dto: MeasureUnitDto, repo: Repository) -> Self:
+        base_unit = None if dto.base_unit is None \
+            else repo.get(dto.base_unit)
+        return MeasureUnitModel(
+            coef=dto.coefficient,
+            name=dto.name,
+            base_unit=base_unit
         )
