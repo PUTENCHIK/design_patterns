@@ -168,19 +168,46 @@ class Validator:
     ) -> bool:
         return Validator.validate(value, list, field_name, could_be_none)
     
-    """Метод проверки на список и того, что все его элементы одного типа"""
+    """
+    Метод проверки на список и того, что все его элементы переданного типа
+    """
     def is_list_of(
-        value: list,
+        list_: list,
         types: Union[Type, List[Type], Tuple[Type]],
-        field_name: str,
+        list_name: str,
         could_item_be_none: bool = False
     ) -> bool:
-        Validator.is_list(value, field_name)
-        for item in value:
-            Validator.validate(item, types, f"item of {field_name}",
+        Validator.is_list(list_, list_name)
+        for item in list_:
+            Validator.validate(item, types, f"item of {list_name}",
                                could_item_be_none)
         return True
     
+    """Метод проверки на список и того, что все его элементы одного типа"""
+    def is_list_of_same(
+        list_: list,
+        list_name: str,
+        could_be_empty: bool = False,
+        could_item_be_none: bool = False
+    ) -> bool:
+        Validator.is_list(list_, list_name)
+        if not len(list_):
+            if could_be_empty:
+                return True
+            else:
+                raise ParamException(f"List '{list_name} can't be empty")
+        type_ = type(list_[0])
+        for i, item in enumerate(list_):
+            try:
+                Validator.validate(item, type_, f"item of {list_name}",
+                                could_item_be_none)
+            except WrongTypeException:
+                raise WrongTypeException(
+                    f"#{i+1} item must be '{type_.__name__}' like "
+                    f"first item in list, not '{type(item).__name__}'"
+                )
+        return True
+
     """Метод проверки на существование файла
     
     Args:
@@ -211,3 +238,36 @@ class Validator:
             raise FileNotFoundError(f"No such file: {file_name}")
         
         return str(pathlib.Path(file_name).absolute())
+    
+    """Метод проверки на то, что класс является суперклассом для объекта
+    
+    Args:
+        superclass (type): потенциальный суперкласс
+        value (Any): объект, тип которого проверяется то, что он подкласс
+            для superclass.
+        value_name (str): строковое обозначение value
+        could_be_none (bool): может ли value быть None. По умолчанию False.
+    
+    Returns:
+        bool: True, если переданный тип - суперкласс для value,
+            иначе False.
+    
+    Raises:
+        WrongTypeException: тип value не является подклассом subclass
+    """
+    @staticmethod
+    def is_superclass(
+        superclass: type,
+        value: Any,
+        value_name: str,
+        could_be_none: bool = False
+    ) -> bool:
+        if could_be_none and value is None:
+            return True
+        if isinstance(value, superclass):
+            return True
+        else:
+            raise WrongTypeException(
+                f"Type of '{value_name}' is {type(value).__name__}, "
+                f"which is not subclass of {superclass.__name__}"
+            )

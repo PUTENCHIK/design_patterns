@@ -1,0 +1,5 @@
+flask
+connexion
+connexion[swagger-ui]
+connexion[flask]
+connexion[uvicorn]

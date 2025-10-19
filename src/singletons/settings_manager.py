@@ -1,7 +1,6 @@
 import json
-import pathlib
 from src.core.validator import Validator as vld
-from src.core.exceptions import WrongTypeException
+from src.core.response_format import ResponseFormat
 from src.models.settings_model import SettingsModel
 
 
@@ -45,6 +44,15 @@ class SettingsManager:
     def settings(self, value: SettingsModel):
         vld.validate(value, SettingsModel, "settings")
         self.__settings = value
+    
+    """Поле формата настроек, инкапсулируемое settings"""
+    @property
+    def response_format(self) -> ResponseFormat:
+        return self.settings.response_format
+    
+    @response_format.setter
+    def response_format(self, value: ResponseFormat):
+        self.settings.response_format = value
     
     """Метод загрузки файла настроек"""
     def load(self, file_name: str) -> bool:
