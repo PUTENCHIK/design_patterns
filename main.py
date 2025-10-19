@@ -63,7 +63,7 @@ def build_response():
 
     models = list(start_service.repository.data[model_type].values())
 
-    return factory.create(format).build(models)
+    return {"result": factory.create(format).build(models)}
 
 
 if __name__ == '__main__':
