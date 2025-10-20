@@ -1,5 +1,6 @@
 from typing import List, Any, Optional
 from src.core.validator import Validator as vld
+from src.utils import get_properties
 
 
 """Репозиторий данных"""
@@ -35,8 +36,8 @@ class Repository:
     """Метод получения всех ключей Reposity по шаблону `*_key`"""
     @staticmethod
     def keys() -> List[str]:
-        return [getattr(Repository, f) for f in dir(Repository)
-                if not f.startswith("_") and f.endswith("_key")]
+        return [getattr(Repository, f) for f in get_properties(Repository)
+                if f.endswith("_key")]
     
     """Инициализация списков в словаре данных"""    
     def initalize(self):

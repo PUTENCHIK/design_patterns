@@ -9,6 +9,8 @@ from src.singletons.repository import Repository
 
 """Модель ингредиента рецепта"""
 class IngredientModel(AbstractModel):
+    # Наименование (наследуется от AbstractModel)
+
     # Номенклатура, описывающая ингредиент
     __nomenclature: NomenclatureModel
 
@@ -32,6 +34,11 @@ class IngredientModel(AbstractModel):
         if count is not None:
             self.count = count
     
+    """Поле наименования"""
+    @property
+    def name(self) -> str:
+        return f"ингредиент '{self.nomenclature.name}'"
+
     """Поле номенклатуры"""
     @property
     def nomenclature(self) -> NomenclatureModel:
