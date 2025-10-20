@@ -13,7 +13,7 @@ class ResponseJson(AbstractResponse):
         super().__init__()
     
     def build(self, data: List[Any]) -> str:
-        super().build(ResponseFormat.JSON, data)
+        super().build(data, ResponseFormat.JSON)
 
         dict_ = obj_to_dict(data)
         return json.dumps(dict_, ensure_ascii=False)

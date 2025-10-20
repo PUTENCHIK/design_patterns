@@ -45,4 +45,4 @@ class FactoryEntities:
     
     """Получение экземпляра ответа по умолчанию (из настроек)"""
     def create_default(self) -> AbstractResponse:
-        return self.create(SettingsManager().response_format)
+        return self.create(SettingsManager().settings.response_format)

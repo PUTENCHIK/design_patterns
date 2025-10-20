@@ -15,7 +15,7 @@ class ResponseCsv(AbstractResponse):
     
     """Сформировать CSV из списка моделей"""
     def build(self, data: List[Any]) -> str:
-        text = super().build(ResponseFormat.CSV, data)
+        text = super().build(data, ResponseFormat.CSV)
 
         # Шапка
         item = data[0]

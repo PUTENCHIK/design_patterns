@@ -13,7 +13,7 @@ class ResponseXml(AbstractResponse):
         super().__init__()
     
     def build(self, data: List[Any]) -> str:
-        super().build(ResponseFormat.XML, data)
+        super().build(data, ResponseFormat.XML)
 
         xml_head = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
         json = obj_to_dict(data)
