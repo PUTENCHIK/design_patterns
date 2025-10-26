@@ -1,4 +1,5 @@
 import unittest
+from src.core.response_format import ResponseFormat
 from src.singletons.settings_manager import SettingsManager
 
 
@@ -42,6 +43,7 @@ class TestSettingsManager(unittest.TestCase):
         assert manager.settings.company.corr_account == 95847306800
         assert manager.settings.company.bic == 458205943
         assert manager.settings.company.ownership == "owner"
+        assert manager.settings.response_format == ResponseFormat.JSON
     
     # Загрузка данных компании из файла в другой директории
     def test_settingsmanager_load_load_other_valid_file_fields_are_valid(self):
@@ -56,6 +58,7 @@ class TestSettingsManager(unittest.TestCase):
         assert manager.settings.company.corr_account == 12345678912
         assert manager.settings.company.bic == 123456789
         assert manager.settings.company.ownership == "owner"
+        assert manager.settings.response_format == ResponseFormat.CSV
     
     # Загрузка валидного файла без полей corr_account и bic
     def test_settingsmanager_load_load_valid_file_without_few_fields_no_exceptions(self):

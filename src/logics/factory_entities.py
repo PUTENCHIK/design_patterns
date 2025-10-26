@@ -13,7 +13,7 @@ from src.singletons.settings_manager import SettingsManager
 """Класс-фабрика для создания ответов в разных форматах"""
 class FactoryEntities:
     # Сопоставление текстовых форматов и Enum-форматов
-    __match_formats = {
+    match_formats = {
         "csv": ResponseFormat.CSV,
         "markdown": ResponseFormat.MARKDOWN,
         "md": ResponseFormat.MARKDOWN,
@@ -22,7 +22,7 @@ class FactoryEntities:
     }
 
     # Сопоставление форматов и классов-ответов
-    __match_responses = {
+    match_responses = {
         ResponseFormat.CSV: ResponseCsv,
         ResponseFormat.MARKDOWN: ResponseMarkdown,
         ResponseFormat.JSON: ResponseJson,
@@ -34,14 +34,14 @@ class FactoryEntities:
         vld.validate(format, (str, ResponseFormat), "response format")
         if isinstance(format, str):
             format = format.lower().strip()
-            if format not in self.__match_formats:
+            if format not in self.match_formats:
                 raise OperationException(
                     f"Format '{format}' isn't supported. Available formats: "
-                    f"{self.__match_formats.keys()}"
+                    f"{self.match_formats.keys()}"
                 )
-            format = self.__match_formats[format]
+            format = self.match_formats[format]
         
-        return self.__match_responses[format]()
+        return self.match_responses[format]()
     
     """Получение экземпляра ответа по умолчанию (из настроек)"""
     def create_default(self) -> AbstractResponse:
