@@ -1,6 +1,5 @@
 import json
 from src.core.validator import Validator as vld
-from src.core.response_format import ResponseFormat
 from src.models.settings_model import SettingsModel
 
 
@@ -51,13 +50,16 @@ class SettingsManager:
         try:
             with open(self.file_name, mode='r', encoding='utf-8') as file:
                 settings = json.load(file)
-                if "company" in settings:
-                    return self.convert(settings["company"])
+                self.convert_company_data(settings["company"])
+                self.convert_response_format(
+                    settings["default_response_format"]
+                )
+                return True
         except:
             return False
     
     """Метод извлечения данных компании из загуженного файла настроек"""
-    def convert(self, data: dict) -> bool:
+    def convert_company_data(self, data: dict) -> bool:
         vld.is_dict(data, "data")
 
         # Поля модели компании, которые могут быть заполнены
@@ -76,6 +78,16 @@ class SettingsManager:
                 setattr(self.settings.company, key, data[key])
             return True
         except:
+            return False
+    
+    """Метод загрузки формата ответов по умолчанию из файла настроек"""
+    def convert_response_format(self, data: str) -> bool:
+        from src.logics.factory_entities import FactoryEntities
+        try:
+            format = FactoryEntities.match_formats[data]
+            self.settings.response_format = format
+            return True
+        except KeyError:
             return False
     
     """Метод инициализации стандартных значений полей"""

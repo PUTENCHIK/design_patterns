@@ -6,5 +6,6 @@
         "corr_account": 12345678912,
         "bic": 123456789,
         "ownership": "owner"
-    }
+    },
+    "default_response_format": "csv"
 }
