@@ -59,8 +59,8 @@ class TestFactoryEntities(unittest.TestCase):
         with self.assertRaises(OperationException):
             factory.create(format)
     
-    # Метод create() выкидывает соответствующее исключение, если передан
-    # несуществующий формат ответа
+    # Метод create_default() возвращает ответ того формата, который указан
+    # в настройках
     def test_factoryentities_createdefault_create_default_response_no_exceptions(self):
         # Подготовка
         factory = FactoryEntities()

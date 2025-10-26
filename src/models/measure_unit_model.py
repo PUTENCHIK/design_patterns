@@ -75,7 +75,7 @@ class MeasureUnitModel(AbstractModel):
     @staticmethod
     def from_dto(dto: MeasureUnitDto, repo: Repository) -> Self:
         base_unit = None if dto.base_unit is None \
-            else repo.get(dto.base_unit)
+            else repo.get_by_name(dto.base_unit)
         return MeasureUnitModel(
             coef=dto.coefficient,
             name=dto.name,

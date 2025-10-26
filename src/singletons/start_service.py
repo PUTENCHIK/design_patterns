@@ -111,7 +111,7 @@ class StartService:
         
         for item in items:
             # Если объект с таким же именем уже существует, то пропускаем
-            if self.__repository.get(item.get("name", "")):
+            if self.__repository.get_by_name(item.get("name", "")):
                 continue
             
             dto = dto_type().load(item)

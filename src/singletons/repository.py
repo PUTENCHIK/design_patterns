@@ -1,5 +1,6 @@
 from typing import List, Any, Optional
 from src.core.validator import Validator as vld
+from src.core.exceptions import ParamException
 from src.utils import get_properties
 
 
@@ -47,11 +48,40 @@ class Repository:
             self.data[key] = dict()
     
     """Метод получения объекта в памяти по имени"""
-    def get(self, item_name: str) -> Optional[Any]:
-        vld.is_str(item_name, "item_name")
+    def get_by_name(self, name: str) -> Optional[Any]:
+        vld.is_str(name, "item_name")
         for key in self.keys():
             items: dict = self.data[key]
             for _, item in items.items():
-                if item.name.lower() == item_name.lower():
+                if item.name.lower() == name.lower():
                     return item
         return None
+
+    """Метод получения объекта в памяти по уникальному коду"""
+    def get_by_unique_code(self, unique_code: str) -> Optional[Any]:
+        vld.is_str(unique_code, "item_unique_code")
+        for key in self.keys():
+            items: list = self.data[key].values()
+            items = [item
+                     for item in items
+                     if item.unique_code == unique_code]
+            if len(items):
+                return items[0]
+        
+        return None
+
+    """Универсальный метод получения объекта в памяти"""
+    def get(
+        self,
+        unique_code: Optional[str] = None,
+        name: Optional[str] = None
+    ) -> Optional[Any]:
+        if unique_code is not None:
+            return self.get_by_unique_code(unique_code)
+        elif name is not None:
+            return self.get_by_name(unique_code)
+        else:
+            raise ParamException(
+                "Must be transmitted either unique_code, or name, "
+                "but both is None"
+            )
