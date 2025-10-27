@@ -1,5 +1,5 @@
 import pathlib
-from typing import Optional, Any, Union, Type, List, Tuple
+from typing import Optional, Any, Union, Type, List, Tuple, Dict
 from src.core.exceptions import (
     InvalidValueException, WrongTypeException, ParamException
 )
@@ -59,12 +59,13 @@ class Validator:
                     flag = True
                     break
             if not flag:
+                types = [t.__name__ for t in types]
                 raise WrongTypeException(
                     f"'{field_name}' must be {', or '.join(types)}, "
                     f"not '{type(value).__name__}'"
                 )
         elif isinstance(types, type):
-            if not isinstance(value, types) or type(value) is not types:
+            if not isinstance(value, types):
                 raise WrongTypeException(
                     f"'{field_name}' is {type(value).__name__}, not {types.__name__}"
                 )
@@ -185,12 +186,12 @@ class Validator:
     
     """Метод проверки на список и того, что все его элементы одного типа"""
     def is_list_of_same(
-        list_: list,
+        list_: Union[List, Tuple],
         list_name: str,
         could_be_empty: bool = False,
         could_item_be_none: bool = False
     ) -> bool:
-        Validator.is_list(list_, list_name)
+        Validator.validate(list_, (list, tuple), list_name)
         if not len(list_):
             if could_be_empty:
                 return True
@@ -207,6 +208,25 @@ class Validator:
                     f"first item in list, not '{type(item).__name__}'"
                 )
         return True
+    
+    """Метод проверки на кортеж"""
+    @staticmethod
+    def is_tuple(
+        value: tuple,
+        field_name: str,
+        could_be_none: bool = False,
+    ) -> bool:
+        return Validator.validate(value, tuple, field_name, could_be_none)
+    
+    """Метод проверки на структуру данных (список, словарь или кортеж)"""
+    @staticmethod
+    def is_structure(
+        value: Union[List, Dict, Tuple],
+        field_name: str,
+        could_be_none: bool = False,
+    ) -> bool:
+        return Validator.validate(value, (list, dict, tuple), field_name,
+                                  could_be_none)
 
     """Метод проверки на существование файла
     
