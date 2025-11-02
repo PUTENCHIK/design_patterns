@@ -1,5 +1,5 @@
 from typing import List, Dict
-from datetime import datetime
+from datetime import date, datetime
 from src.core.validator import Validator as vld
 from src.logics.tbs_line import TbsLine
 from src.models.storage_model import StorageModel
@@ -14,12 +14,15 @@ class TbsCalculator:
     @staticmethod
     def calculate(
         storage: StorageModel, 
-        start: datetime, 
-        end: datetime
+        start: date, 
+        end: date
     ) -> List[TbsLine]:
         vld.validate(storage, StorageModel, "storage")
-        vld.validate(start, datetime, "start date")
-        vld.validate(end, datetime, "end date")
+        vld.validate(start, date, "start date")
+        vld.validate(end, date, "end date")
+
+        start = datetime(start.year, start.month, start.day)
+        end = datetime(end.year, end.month, end.day, 23, 59, 59)
         key = Repository.transactions_key
         items: List[TransactionModel] = list(
             StartService().data[key].values()

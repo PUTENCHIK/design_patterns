@@ -15,6 +15,9 @@ class ResponseHtmlTable(AbstractResponse):
     def build(self, data: List[TbsLine]) -> str:
         content = super().build(data, ResponseFormat.HTML_TABLE)
 
+        if len(data) == 0:
+            return content
+
         props = get_properties(data[0])
         content += self.tag("thead", self.get_row(props, True))
 

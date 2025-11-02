@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-from datetime import date, datetime
+from datetime import date
 
 from src.core.response_format import ResponseFormat
 from src.core.http_responses import (TextResponse, JsonResponse, ErrorResponse,
@@ -110,11 +110,7 @@ def get_tbs(storage_code: str, start: date, end: date):
     if start >= end:
         return ErrorResponse(f"End date must be later than start date")
     
-    tbs_lines = TbsCalculator.calculate(
-        storage,
-        datetime(start.year, start.month, start.day),
-        datetime(end.year, end.month, end.day),
-    )
+    tbs_lines = TbsCalculator.calculate(storage, start, end)
 
     return HTMLResponse(
         factory_entities.create(ResponseFormat.HTML_TABLE).build(tbs_lines)
@@ -129,7 +125,7 @@ def save_all_data():
 
     data = start_service.data
     file_content = factory_converters.convert(data)
-    
+
     return JsonFileResponse(file_content)
 
 

@@ -84,6 +84,8 @@ class TbsLine:
     """
     def add(self, trans: TransactionModel, start: datetime, end: datetime):
         vld.validate(trans, TransactionModel, "transaction")
+        vld.validate(start, datetime, "start date")
+        vld.validate(end, datetime, "end date")
 
         if self.nomenclature != trans.nomenclature:
             raise OperationException(
