@@ -196,7 +196,7 @@ class Validator:
             if could_be_empty:
                 return True
             else:
-                raise ParamException(f"List '{list_name} can't be empty")
+                raise ParamException(f"List '{list_name}' can't be empty")
         type_ = type(list_[0])
         for i, item in enumerate(list_):
             try:

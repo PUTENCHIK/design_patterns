@@ -14,6 +14,6 @@ class AbstractResponse(ABC):
     @abstractmethod
     def build(self, data: list, format: ResponseFormat) -> str:
         vld.validate(format, ResponseFormat, "format")
-        vld.is_list_of_same(data, "list of models")
+        vld.is_list_of_same(data, "list of models", True)
 
         return ""

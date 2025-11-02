@@ -20,29 +20,33 @@ factory_converters = FactoryConverters()
 app = FastAPI()
 
 
-"""Проверить доступность REST API"""
 @app.get("/api/status")
 def status():
+    """Проверить доступность REST API"""
     return TextResponse("success")
 
 
-"""Доступные форматы ответов"""
 @app.get("/api/responses/formats")
 def get_response_formats():
+    """Доступные форматы ответов"""
     content = [format.name.lower() for format in ResponseFormat]
     return JsonResponse(content)
 
 
-"""Типы моделей, доступные для формирования ответов"""
 @app.get("/api/responses/models")
 def get_response_models():
+    """Типы моделей, доступные для формирования ответов"""
     content = [key for key in Repository.keys()]
     return JsonResponse(content)
 
 
-"""Сформировать ответ для моделей (model) в переданном формате (format)"""
 @app.get("/api/responses/build")
 def build_response(format: str, model: str):
+    """
+    Сформировать ответ для моделей в переданном формате:
+    - `format`: строковое обозначение формата ответа
+    - `model`: строковое обозначения типа моделей
+    """
     formats = [format.name.lower() for format in ResponseFormat]
     if format is None:
         return ErrorResponse("param 'format' must be transmitted")
@@ -68,6 +72,7 @@ def build_response(format: str, model: str):
 
 @app.get("/api/recipes")
 def get_recipes():
+    """Получить список рецептов в формате JSON"""
     key = Repository.recipes_key
     recipes = list(start_service.repository.data[key].values())
     result = factory_converters.convert(recipes)
@@ -75,8 +80,12 @@ def get_recipes():
     return JsonResponse(result)
 
 
-@app.get("/api/recipes/<unique_code>")
+@app.get("/api/recipes/{unique_code}")
 def get_recipe(unique_code: str):
+    """
+    Получить рецепт в формате JSON по его уникальному коду:
+    - `unique_code`: уникальный код рецепта в хранилище
+    """
     recipe = start_service.repository.get(unique_code=unique_code)
     result = factory_converters.convert(recipe)
 
@@ -84,10 +93,8 @@ def get_recipe(unique_code: str):
 
 
 if __name__ == "__main__":
-    start_service.start(settings_file)
     settings_manager.load(settings_file)
-    uvicorn.run(app="main:app",
+    start_service.start(settings_file)
+    uvicorn.run(app=app,
                 host="localhost",
-                port=8081,
-                reload=True)
-
+                port=8081)
