@@ -13,12 +13,6 @@ from src.models.nomenclature_group_model import NomenclatureGroupModel
 from src.singletons.repository import Repository
 
 
-"""
-TODO
-1. Учитывать возможность изменения порядка методов создания данных
-(либо кидать соответствующее исключение)
-
-"""
 """Класс, наполняющий приложение эталлоными объектами разных типов"""
 class StartService:
     # Ссылка на экземпляр StartService

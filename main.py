@@ -1,5 +1,5 @@
-import connexion
-from flask import request
+import uvicorn
+from fastapi import FastAPI
 
 from src.core.response_format import ResponseFormat
 from src.core.http_responses import (TextResponse, JsonResponse, ErrorResponse,
@@ -17,32 +17,32 @@ settings_manager = SettingsManager()
 factory_entities = FactoryEntities()
 factory_converters = FactoryConverters()
 
-app = connexion.FlaskApp(__name__)
+app = FastAPI()
+
 
 """Проверить доступность REST API"""
-@app.route("/api/status", methods=['GET'])
+@app.get("/api/status")
 def status():
     return TextResponse("success")
 
 
 """Доступные форматы ответов"""
-@app.route("/api/responses/formats", methods=['GET'])
+@app.get("/api/responses/formats")
 def get_response_formats():
     content = [format.name.lower() for format in ResponseFormat]
     return JsonResponse(content)
 
 
 """Типы моделей, доступные для формирования ответов"""
-@app.route("/api/responses/models", methods=['GET'])
+@app.get("/api/responses/models")
 def get_response_models():
     content = [key for key in Repository.keys()]
     return JsonResponse(content)
 
 
 """Сформировать ответ для моделей (model) в переданном формате (format)"""
-@app.route("/api/responses/build", methods=['GET'])
-def build_response():
-    format = request.args.get('format')
+@app.get("/api/responses/build")
+def build_response(format: str, model: str):
     formats = [format.name.lower() for format in ResponseFormat]
     if format is None:
         return ErrorResponse("param 'format' must be transmitted")
@@ -52,7 +52,6 @@ def build_response():
             f"not such format '{format}'. Available: {formats}"
         )
     
-    model = request.args.get('model')
     model_types = [key for key in Repository.keys()]
     if model is None:
         return ErrorResponse("param 'model' must be transmitted")
@@ -67,7 +66,7 @@ def build_response():
     return FormatResponse(result, format)
 
 
-@app.route("/api/recipes", methods=['GET'])
+@app.get("/api/recipes")
 def get_recipes():
     key = Repository.recipes_key
     recipes = list(start_service.repository.data[key].values())
@@ -76,7 +75,7 @@ def get_recipes():
     return JsonResponse(result)
 
 
-@app.route("/api/recipes/<unique_code>", methods=['GET'])
+@app.get("/api/recipes/<unique_code>")
 def get_recipe(unique_code: str):
     recipe = start_service.repository.get(unique_code=unique_code)
     result = factory_converters.convert(recipe)
@@ -84,7 +83,11 @@ def get_recipe(unique_code: str):
     return JsonResponse(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     start_service.start(settings_file)
     settings_manager.load(settings_file)
-    app.run(host="localhost", port=8080)
+    uvicorn.run(app="main:app",
+                host="localhost",
+                port=8081,
+                reload=True)
+

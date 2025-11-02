@@ -9,6 +9,11 @@ from src.logics.reference_converter import ReferenceConverter
 from src.logics.structure_converter import StructureConverter
 
 
+"""
+TODO
+1. Поменять if-else на словарь
+2. Всё-таки все наследники AbstractConverter возвращают словари
+"""
 """Класс-фабрика для конвертации любых объектов и списков в JSON-формат"""
 class FactoryConverters:
 
