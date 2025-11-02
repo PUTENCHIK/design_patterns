@@ -17,12 +17,10 @@ class SettingsManager:
     # Инкупсулирумый объект настроек
     __settings: SettingsModel
 
-    def __init__(self):
-        self.default()
-
     def __new__(cls):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
+            cls.__instance.default()
         return cls.__instance
 
     """Абсолютный путь к файлу с настройками"""
@@ -46,6 +44,7 @@ class SettingsManager:
     
     """Метод загрузки файла настроек"""
     def load(self, file_name: str) -> bool:
+        self.settings.default()
         self.file_name = file_name
         try:
             with open(self.file_name, mode='r', encoding='utf-8') as file:
@@ -54,6 +53,8 @@ class SettingsManager:
                 self.convert_response_format(
                     settings["default_response_format"]
                 )
+                self.convert_first_start(settings["first_start"])
+                self.convert_datetime_format(settings["datetime_format"])
                 return True
         except:
             return False
@@ -86,6 +87,22 @@ class SettingsManager:
         try:
             format = FactoryEntities.match_formats[data]
             self.settings.response_format = format
+            return True
+        except KeyError:
+            return False
+    
+    """Метод загрузки параметра запуска сервиса в первый раз"""
+    def convert_first_start(self, data: str) -> bool:
+        try:
+            self.settings.first_start = bool(data)
+            return True
+        except KeyError:
+            return False
+    
+    """Метод загрузки формата даты и времени"""
+    def convert_datetime_format(self, data: str) -> bool:
+        try:
+            self.settings.datetime_format = data
             return True
         except KeyError:
             return False

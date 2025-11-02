@@ -14,6 +14,11 @@ class TestStartService(unittest.TestCase):
         super().__init__(methodName)
         self.__start_service.start(self.__file_name)
     
+    def test_same(self):
+        ss = StartService()
+
+        assert ss == self.__start_service
+
     # Метод load() загружает 5 единиц измерения
     def test_startservice_load_load_units_added_5_units(self):
         # Подготовка

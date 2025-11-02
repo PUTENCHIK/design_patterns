@@ -93,3 +93,8 @@ class CompanyModel(AbstractModel):
     def ownership(self, value: str):
         vld.is_str(value, "ownership", len_=5)
         self.__ownership = value
+
+    """Фабричный метод из DTO"""
+    @staticmethod
+    def from_dto(dto, repo):
+        return super().from_dto(dto, repo)

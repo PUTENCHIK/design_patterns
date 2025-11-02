@@ -24,6 +24,12 @@ class Repository:
     # Ключ для рецептов
     recipes_key: str = "recipes"
 
+    # Ключ для складов
+    storages_key: str = "storages"
+
+    # Ключ для транзакций
+    transactions_key: str = "transactions"
+
     def __new__(cls):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
@@ -79,7 +85,7 @@ class Repository:
         if unique_code is not None:
             return self.get_by_unique_code(unique_code)
         elif name is not None:
-            return self.get_by_name(unique_code)
+            return self.get_by_name(name)
         else:
             raise ParamException(
                 "Must be transmitted either unique_code, or name, "

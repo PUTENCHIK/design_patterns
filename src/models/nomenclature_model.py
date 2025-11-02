@@ -72,6 +72,7 @@ class NomenclatureModel(AbstractModel):
         return NomenclatureModel(name, group, unit)
     
     """Фабричный метод из DTO"""
+    @staticmethod
     def from_dto(dto: NomenclatureDto, repo: Repository) -> Self:
         group = repo.get_by_name(dto.group)
         unit = repo.get_by_name(dto.measure_unit)

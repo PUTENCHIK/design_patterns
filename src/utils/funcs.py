@@ -66,3 +66,9 @@ def obj_to_dict(object_: Any) -> dict:
     # Всё остальное
     else:
         return str(object_)
+
+
+"""Функция проверки объекта на примитивный тип"""
+def is_primitive(object_: Any) -> bool:
+    type_ = type(object_)
+    return type_ in [bool, int, float, str] or object_ is None

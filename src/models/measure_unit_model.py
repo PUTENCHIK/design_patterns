@@ -1,4 +1,4 @@
-from typing import Optional, Self, Union
+from typing import Optional, Self, Union, Tuple
 from src.core.abstract_model import AbstractModel
 from src.core.validator import Validator as vld
 from src.dtos.measure_unit_dto import MeasureUnitDto
@@ -81,3 +81,11 @@ class MeasureUnitModel(AbstractModel):
             name=dto.name,
             base_unit=base_unit
         )
+
+    """Метод, возвращающий базовую единицу измерения без базовой единицы"""
+    def get_base_unit(self) -> Tuple[Self, float]:
+        if self.base_unit is None:
+            return self, 1
+        else:
+            bu, c = self.base_unit.get_base_unit()
+            return bu, c * self.coefficient

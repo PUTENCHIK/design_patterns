@@ -54,7 +54,7 @@ class TestFactoryEntities(unittest.TestCase):
     def test_factoryentities_create_create_non_existent_response_raise_exception(self):
         # Подготовка
         factory = FactoryEntities()
-        format = "html"
+        format = "random format"
         # Действие и проверка
         with self.assertRaises(OperationException):
             factory.create(format)
