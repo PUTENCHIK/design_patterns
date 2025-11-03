@@ -17,6 +17,9 @@ class ResponseCsv(AbstractResponse):
     def build(self, data: List[Any]) -> str:
         text = super().build(data, ResponseFormat.CSV)
 
+        if len(data) == 0:
+            return text
+
         # Шапка
         item = data[0]
         properties = get_properties(item)

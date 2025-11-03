@@ -79,6 +79,7 @@ class IngredientModel(AbstractModel):
         return IngredientModel(nomenclature, measure_unit, count)
     
     """Фабричный метод из DTO"""
+    @staticmethod
     def from_dto(dto: IngredientDto, repo: Repository) -> Self:
         nomenclature = repo.get_by_name(dto.nomenclature)
         measure_unit = repo.get_by_name(dto.measure_unit)

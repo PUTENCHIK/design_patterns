@@ -99,6 +99,7 @@ class RecipeModel(AbstractModel):
         self.__steps = value
 
     """Фабричный метод из DTO"""
+    @staticmethod
     def from_dto(dto: RecipeDto, repo: Repository) -> Self:
         ingredients = [
             IngredientModel.from_dto(ing_dto, repo)

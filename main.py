@@ -1,9 +1,12 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from datetime import date
 
 from src.core.response_format import ResponseFormat
 from src.core.http_responses import (TextResponse, JsonResponse, ErrorResponse,
-                                     FormatResponse)
+                                     FormatResponse, JsonFileResponse)
+from src.logics.tbs_calculator import TbsCalculator
 from src.logics.factory_entities import FactoryEntities
 from src.logics.factory_converters import FactoryConverters
 from src.singletons.repository import Repository
@@ -90,6 +93,40 @@ def get_recipe(unique_code: str):
     result = factory_converters.convert(recipe)
 
     return JsonResponse(result)
+
+
+@app.get("/api/tbs/{storage_code}")
+def get_tbs(storage_code: str, start: date, end: date):
+    """
+    Таблица оборотно-сальдовой ведомости (Trial Balance Sheet, TBS)
+    - `storage_code`: уникальный код склада
+    - `start`: начальная дата отчёта
+    - `end`: дата окончания отчёта
+    """
+    storage = start_service.repository.get(unique_code=storage_code)
+    if storage is None:
+        return ErrorResponse(f"Storage with code '{storage_code}' is null")
+    
+    if start >= end:
+        return ErrorResponse(f"End date must be later than start date")
+    
+    tbs_lines = TbsCalculator.calculate(storage, start, end)
+
+    return HTMLResponse(
+        factory_entities.create(ResponseFormat.HTML_TABLE).build(tbs_lines)
+    )
+
+
+@app.post("/api/catalog/download")
+def save_all_data():
+    """
+    Скачивание JSON файла с данными обо всех моделях, хранимых в Repository
+    """
+
+    data = start_service.data
+    file_content = factory_converters.convert(data)
+
+    return JsonFileResponse(file_content)
 
 
 if __name__ == "__main__":

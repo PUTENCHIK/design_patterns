@@ -100,7 +100,7 @@ class Validator:
         strictly_len: bool = False,
     ) -> bool:
         return Validator.validate(value, str, field_name,
-                                  could_be_none,len_, strictly_len)
+                                  could_be_none, len_, strictly_len)
     
     """Метод проверки на целочисленное значение"""
     @staticmethod

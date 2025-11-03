@@ -50,3 +50,13 @@ class AbstractModel(ABC):
             raise WrongTypeException(
                 f"Imposible compare with '{type(other)}'"
             )
+    
+    """Перегрузка оператора неравества"""
+    def __ne__(self, other: Union[str, Self]) -> bool:
+        return not self.__eq__(other)
+    
+    """Абстрактный фабричный метод из DTO"""
+    @staticmethod
+    @abstractmethod
+    def from_dto(dto, repo) -> Self:
+        pass

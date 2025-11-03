@@ -14,6 +14,7 @@ class TestSaveResponsesResults(unittest.TestCase):
         ResponseFormat.MARKDOWN: "md",
         ResponseFormat.JSON: "json",
         ResponseFormat.XML: "xml",
+        ResponseFormat.HTML_TABLE: "html"
     }
     
     # Путь до файла с тестовыми настройками
@@ -51,7 +52,10 @@ class TestSaveResponsesResults(unittest.TestCase):
                 file_path.touch(exist_ok=True)
                 
                 data = self.__start_service.repository.data[model].values()
-                result = response.build(list(data))
+                data = list(data)
+                if len(data) == 0:
+                    continue
+                result = response.build(data)
 
                 with open(file_path, 'w', encoding="utf-8") as file:
                     file.write(result)

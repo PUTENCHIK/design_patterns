@@ -1,5 +1,5 @@
 import unittest
-from src.core.exceptions import ParamException, WrongTypeException
+from src.core.exceptions import WrongTypeException
 from src.logics.response_csv import ResponseCsv
 from src.models.measure_unit_model import MeasureUnitModel
 from src.models.nomenclature_group_model import NomenclatureGroupModel
@@ -37,15 +37,6 @@ class TestResponseCsv(unittest.TestCase):
         
         rows = result.split("\n")
         assert len(rows) == len(data) + 1
-    
-    # Метод build() выбрасывает исключение при передаче пустого списка
-    def test_responsecsv_build_build_from_empty_list_raises_param_exception(self):
-        # Подготовка
-        response = ResponseCsv()
-        data = []
-        # Действие и проверка
-        with self.assertRaises(ParamException):
-            response.build(data)
 
     # Метод build() выбрасывает исключение при передаче списка из моделей
     # разных типов

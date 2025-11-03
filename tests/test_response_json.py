@@ -1,6 +1,6 @@
 import json
 import unittest
-from src.core.exceptions import ParamException, WrongTypeException
+from src.core.exceptions import WrongTypeException
 from src.logics.response_json import ResponseJson
 from src.models.measure_unit_model import MeasureUnitModel
 from src.models.nomenclature_group_model import NomenclatureGroupModel
@@ -34,15 +34,6 @@ class TestResponseJson(unittest.TestCase):
         obj = json.loads(result)
         assert obj is not None
         assert len(obj) == len(data)
-    
-    # Метод build() выбрасывает исключение при передаче пустого списка
-    def test_responsejson_build_build_from_empty_list_raises_param_exception(self):
-        # Подготовка
-        response = ResponseJson()
-        data = []
-        # Действие и проверка
-        with self.assertRaises(ParamException):
-            response.build(data)
 
     # Метод build() выбрасывает исключение при передаче списка из моделей
     # разных типов

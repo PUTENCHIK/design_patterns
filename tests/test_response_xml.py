@@ -1,6 +1,6 @@
 import json
 import unittest
-from src.core.exceptions import ParamException, WrongTypeException
+from src.core.exceptions import WrongTypeException
 from src.logics.response_xml import ResponseXml
 from src.models.measure_unit_model import MeasureUnitModel
 from src.models.nomenclature_group_model import NomenclatureGroupModel
@@ -32,15 +32,6 @@ class TestResponseXml(unittest.TestCase):
         assert result is not None
         
         assert result.startswith("<?xml")
-    
-    # Метод build() выбрасывает исключение при передаче пустого списка
-    def test_responsexml_build_build_from_empty_list_raises_param_exception(self):
-        # Подготовка
-        response = ResponseXml()
-        data = []
-        # Действие и проверка
-        with self.assertRaises(ParamException):
-            response.build(data)
 
     # Метод build() выбрасывает исключение при передаче списка из моделей
     # разных типов

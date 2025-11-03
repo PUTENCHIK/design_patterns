@@ -1,6 +1,6 @@
 from json import dumps
 from typing import Any
-from fastapi import Response
+from fastapi.responses import Response
 
 
 """Текстовый HTTP ответ со статусом 200"""
@@ -55,4 +55,19 @@ class FormatResponse(Response):
             status_code=200,
             content=content,
             media_type=ct,
+        )
+
+
+"""HTTP ответ, возвращающий JSON файл"""
+class JsonFileResponse(Response):
+
+    def __init__(self, content: dict):
+        super().__init__(
+            status_code=200,
+            headers = {
+                "Content-Disposition": "attachment;filename=result.json",
+                "Content-Type": "application/json"
+            },
+            content=dumps(content, ensure_ascii=False),
+            media_type="application/json"
         )

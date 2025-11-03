@@ -2,15 +2,20 @@ import json
 from typing import Optional, Dict
 from src.core.validator import Validator as vld
 from src.core.exceptions import OperationException
+from src.dtos.storage_dto import StorageDto
+from src.dtos.transaction_dto import TransactionDto
 from src.dtos.measure_unit_dto import MeasureUnitDto
 from src.dtos.nomenclature_dto import NomenclatureDto
 from src.dtos.nomenclature_group_dto import NomenclatureGroupDto
 from src.dtos.recipe_dto import RecipeDto
 from src.models.recipe_model import RecipeModel
+from src.models.storage_model import StorageModel
+from src.models.transaction_model import TransactionModel
 from src.models.measure_unit_model import MeasureUnitModel
 from src.models.nomenclature_model import NomenclatureModel
 from src.models.nomenclature_group_model import NomenclatureGroupModel
 from src.singletons.repository import Repository
+from src.singletons.settings_manager import SettingsManager
 
 
 """Класс, наполняющий приложение эталлоными объектами разных типов"""
@@ -24,12 +29,10 @@ class StartService:
     # Ссылка на объект Repository
     __repository: Optional[Repository] = Repository()
 
-    def __init__(self):
-        self.__repository.initalize()
-
     def __new__(cls):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
+            cls.__instance.__repository.initalize()
         return cls.__instance
 
     """Поле пути до файла с загружаемыми объектами"""
@@ -105,7 +108,7 @@ class StartService:
         
         for item in items:
             # Если объект с таким же именем уже существует, то пропускаем
-            if self.__repository.get_by_name(item.get("name", "")):
+            if self.__repository.get_by_name(item.get("name", "-")):
                 continue
             
             dto = dto_type().load(item)
@@ -153,6 +156,26 @@ class StartService:
             dto_type=RecipeDto,
             model_type=RecipeModel
         )
+
+    """Метод конвертации объекта в модели складов"""
+    def __convert_storages(self, data: dict) -> bool:
+        return self.__convert_models(
+            data=data,
+            data_key="storages",
+            repo_key=Repository.storages_key,
+            dto_type=StorageDto,
+            model_type=StorageModel
+        )
+
+    """Метод конвертации объекта в модели складов"""
+    def __convert_transactions(self, data: dict) -> bool:
+        return self.__convert_models(
+            data=data,
+            data_key="transactions",
+            repo_key=Repository.transactions_key,
+            dto_type=TransactionDto,
+            model_type=TransactionModel
+        )
     
     """Метод конвертации объекта в модели"""
     def convert(self, data: dict) -> bool:
@@ -161,8 +184,13 @@ class StartService:
         self.__convert_measure_units(data)
         self.__convert_nomenlatures(data)
         self.__convert_recipes(data)
+        self.__convert_storages(data)
+        self.__convert_transactions(data)
     
     """Метод вызова методов генерации эталонных данных"""
     def start(self, file_name: str):
         self.file_name = file_name
-        self.load()
+        sm = SettingsManager()
+        if sm.settings.first_start:
+            self.load()
+        sm.settings.first_start = False

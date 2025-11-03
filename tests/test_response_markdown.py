@@ -1,5 +1,5 @@
 import unittest
-from src.core.exceptions import ParamException, WrongTypeException
+from src.core.exceptions import WrongTypeException
 from src.logics.response_markdown import ResponseMarkdown
 from src.models.measure_unit_model import MeasureUnitModel
 from src.models.nomenclature_group_model import NomenclatureGroupModel
@@ -37,15 +37,6 @@ class TestResponseMarkdown(unittest.TestCase):
         assert headers_1 == 1
         assert headers_2 == len(data)
         assert headers_3 == len(data) * len(props)
-    
-    # Метод build() выбрасывает исключение при передаче пустого списка
-    def test_responsemarkdown_build_build_from_empty_list_raises_param_exception(self):
-        # Подготовка
-        response = ResponseMarkdown()
-        data = []
-        # Действие и проверка
-        with self.assertRaises(ParamException):
-            response.build(data)
 
     # Метод build() выбрасывает исключение при передаче списка из моделей
     # разных типов

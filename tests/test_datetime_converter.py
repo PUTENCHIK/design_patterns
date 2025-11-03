@@ -2,6 +2,7 @@ import unittest
 import datetime
 from src.core.exceptions import WrongTypeException
 from src.logics.datetime_converter import DatetimeConverter
+from src.singletons.settings_manager import SettingsManager
 
 
 class TestDatetimeConverter(unittest.TestCase):
@@ -19,8 +20,8 @@ class TestDatetimeConverter(unittest.TestCase):
         result1 = self.__converter.convert(dt1)
         result2 = self.__converter.convert(dt2)
         # Проверка
-        assert result1 == dt1.strftime(DatetimeConverter.format)
-        assert result2 == dt2.strftime(DatetimeConverter.format)
+        assert result1 == dt1.strftime(SettingsManager().settings.datetime_format)
+        assert result2 == dt2.strftime(SettingsManager().settings.datetime_format)
     
     # Метод convert() выкинет исключение при передачи неверного типа данных
     def test_datetimeconverter_convert_convert_not_datetime_raise_wrongtype(self):
