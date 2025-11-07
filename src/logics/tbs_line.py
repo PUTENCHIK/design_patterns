@@ -1,4 +1,4 @@
-from typing import List
+from typing import Optional, Union
 from datetime import datetime
 from src.core.validator import Validator as vld
 from src.core.exceptions import OperationException
@@ -15,24 +15,33 @@ class TbsLine:
     # Единица измерения (базовая для номенклатуры)
     __measure_unit: MeasureUnitModel
 
-    # Значения транзакций до начальной даты
-    __counts_before_start: List[float]
+    # Начальный остаток
+    __start_count: float = 0.0
 
-    # Значения транзакций в промежутке между начальной и конечной датами
-    __counts_before_end: List[float]
+    # Приход
+    __income: float = 0.0
 
-    # Приход (вычисляемое поле)
-
-    # Расход (вычисляемое поле)
+    # Расход
+    __outgo: float = 0.0
 
     # Остаток на дату окончания (вычисляемое поле)
     
-    def __init__(self, transaction: TransactionModel):
-        self.nomenclature = transaction.nomenclature
+    def __init__(
+        self,
+        nomenclature: NomenclatureModel,
+        start_count: Optional[float] = None,
+        income: Optional[float] = None,
+        outgo: Optional[float] = None,
+    ):
+        self.nomenclature = nomenclature
         base_unit, _ = self.nomenclature.measure_unit.get_base_unit()
         self.measure_unit = base_unit
-        self.__counts_before_start = list()
-        self.__counts_before_end = list()
+        if start_count is not None:
+            self.start_count = start_count
+        if income is not None:
+            self.income = income
+        if outgo is not None:
+            self.outgo = outgo
 
     """Поле номенклатуры"""
     @property
@@ -57,26 +66,37 @@ class TbsLine:
     """Поле начального остатка"""
     @property
     def start_count(self) -> float:
-        return sum(self.__counts_before_start)
+        return self.__start_count
+    
+    @start_count.setter
+    def start_count(self, value: Union[int, float]):
+        vld.is_number(value, "start_count")
+        self.__start_count = value
     
     """Поле прихода"""
     @property
     def income(self) -> float:
-        return sum([value
-                    for value in self.__counts_before_end
-                    if value > 0])
+        return self.__income
+
+    @income.setter
+    def income(self, value: Union[int, float]):
+        vld.is_number(value, "income")
+        self.__income = value
     
     """Поле расхода"""
     @property
     def outgo(self) -> float:
-        return sum([value
-                    for value in self.__counts_before_end
-                    if value < 0])
+        return self.__outgo
+
+    @outgo.setter
+    def outgo(self, value: Union[int, float]):
+        vld.is_number(value, "outgo")
+        self.__outgo = value
     
     """Поле конечного остатка"""
     @property
     def end_count(self) -> float:
-        return self.start_count + self.income + self.outgo
+        return self.__start_count + self.__income + self.__outgo
     
     """
     Метод, добавляющий значение транзакции к соответствующему полю __count

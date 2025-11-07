@@ -1,10 +1,8 @@
-from typing import List, Dict
+from typing import List
 from datetime import date, datetime
 from src.core.validator import Validator as vld
 from src.logics.tbs_line import TbsLine
 from src.models.storage_model import StorageModel
-from src.models.transaction_model import TransactionModel
-from src.singletons.repository import Repository
 from src.singletons.start_service import StartService
 
 
@@ -23,28 +21,23 @@ class TbsCalculator:
 
         start = datetime(start.year, start.month, start.day)
         end = datetime(end.year, end.month, end.day, 23, 59, 59)
-        transactions = StartService().transactions
-        data: Dict[str, TbsLine] = dict()
-        for transaction in transactions.values():
-            if transaction.storage == storage and transaction.datetime <= end:
-                code = transaction.nomenclature.unique_code
-                if code not in data:
-                    data[code] = TbsLine(transaction)
-                line = data[code]
-                line.add(transaction, start, end)
 
-        tbs_keys = data.keys()
-        all_keys = StartService().data[Repository.nomenclatures_key].keys()
-        other_keys = set(all_keys) - set(tbs_keys)
-        for key in other_keys:
-            nomenclature = StartService().repository.get(unique_code=key)
-            if nomenclature is None:
-                continue
-            data[key] = TbsLine(TransactionModel(
-                nomenclature=nomenclature,
-                storage=storage,
-                count=0,
-                measure_unit=nomenclature.measure_unit
-            ))
+        result = list()
+        data = StartService().repository.transactions_data
 
-        return list(data.values())
+        for nom_key, stor_dict in data.items():
+            nomenclature = StartService().repository.get(unique_code=nom_key)
+            line = TbsLine(nomenclature=nomenclature)
+            list_ = stor_dict.get(storage.unique_code, list())
+            for dt, count in list_:
+                if dt < start:
+                    line.start_count += count
+                elif dt <= end:
+                    if count > 0:
+                        line.income += count
+                    else:
+                        line.outgo += count
+                
+            result += [line]
+
+        return result
