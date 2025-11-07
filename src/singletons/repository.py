@@ -57,23 +57,23 @@ class Repository:
     def get_by_name(self, name: str) -> Optional[Any]:
         vld.is_str(name, "item_name")
         for key in self.keys():
-            items: dict = self.data[key]
-            for _, item in items.items():
-                if item.name.lower() == name.lower():
-                    return item
+            items: list = self.data[key].values()
+            items = [item
+                     for item in items
+                     if item.name.lower() == name.lower()]
+            if len(items):
+                return items[0]
+        
         return None
 
     """Метод получения объекта в памяти по уникальному коду"""
     def get_by_unique_code(self, unique_code: str) -> Optional[Any]:
         vld.is_str(unique_code, "item_unique_code")
         for key in self.keys():
-            items: list = self.data[key].values()
-            items = [item
-                     for item in items
-                     if item.unique_code == unique_code]
-            if len(items):
-                return items[0]
-        
+            items: dict = self.data[key]
+            for item in items.values():
+                if item.unique_code == unique_code:
+                    return item
         return None
 
     """Универсальный метод получения объекта в памяти"""
