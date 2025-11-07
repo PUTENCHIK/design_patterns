@@ -68,6 +68,21 @@ class StartService:
     @property
     def nomenclatures(self) -> Dict[str, NomenclatureModel]:
         return self.data[Repository.nomenclatures_key]
+    
+    """Рецепты в репозитории"""
+    @property
+    def recipes(self) -> Dict[str, RecipeModel]:
+        return self.data[Repository.recipes_key]
+    
+    """Склады в репозитории"""
+    @property
+    def storages(self) -> Dict[str, StorageModel]:
+        return self.data[Repository.storages_key]
+    
+    """Транзакции в репозитории"""
+    @property
+    def transactions(self) -> Dict[str, TransactionModel]:
+        return self.data[Repository.transactions_key]
 
     """Метод загрузки эталонных моделей и рецептов из файла настроек"""
     def load(self) -> bool:
@@ -108,12 +123,12 @@ class StartService:
         
         for item in items:
             # Если объект с таким же именем уже существует, то пропускаем
-            if self.__repository.get_by_name(item.get("name", "-")):
+            if self.__repository.get(unique_code=item.get("unique_code", "-")):
                 continue
             
             dto = dto_type().load(item)
             model = model_type.from_dto(dto, self.__repository)
-            self.__repository.data[repo_key][model.name] = model
+            self.__repository.data[repo_key][model.unique_code] = model
 
         return True
     

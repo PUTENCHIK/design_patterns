@@ -23,21 +23,28 @@ class TbsCalculator:
 
         start = datetime(start.year, start.month, start.day)
         end = datetime(end.year, end.month, end.day, 23, 59, 59)
-        key = Repository.transactions_key
-        items: List[TransactionModel] = list(
-            StartService().data[key].values()
-        )
-        transactions = [item
-                        for item in items
-                        if (item.storage == storage and
-                            item.datetime <= end)]
+        transactions = StartService().transactions
         data: Dict[str, TbsLine] = dict()
-        for transaction in transactions:
-            code = transaction.nomenclature.unique_code
-            if code not in data:
-                data[code] = TbsLine(transaction)
-            line = data[code]
-            line.add(transaction, start, end)
-        
+        for transaction in transactions.values():
+            if transaction.storage == storage and transaction.datetime <= end:
+                code = transaction.nomenclature.unique_code
+                if code not in data:
+                    data[code] = TbsLine(transaction)
+                line = data[code]
+                line.add(transaction, start, end)
+
+        tbs_keys = data.keys()
+        all_keys = StartService().data[Repository.nomenclatures_key].keys()
+        other_keys = set(all_keys) - set(tbs_keys)
+        for key in other_keys:
+            nomenclature = StartService().repository.get(unique_code=key)
+            if nomenclature is None:
+                continue
+            data[key] = TbsLine(TransactionModel(
+                nomenclature=nomenclature,
+                storage=storage,
+                count=0,
+                measure_unit=nomenclature.measure_unit
+            ))
+
         return list(data.values())
-        
