@@ -130,6 +130,17 @@ class StartService:
             model = model_type.from_dto(dto, self.__repository)
             self.__repository.data[repo_key][model.unique_code] = model
 
+            if model_type is TransactionModel:
+                nom_id = model.nomenclature.unique_code
+                stor_id = model.storage.unique_code
+                _, coef = model.measure_unit.get_base_unit()
+                stor_dict = self.repository.transactions_data.get(nom_id,
+                                                                  dict())
+                list_ = stor_dict.get(stor_id, list())
+                list_.append((model.datetime, coef * model.count))
+                stor_dict[stor_id] = list_
+                self.repository.transactions_data[nom_id] = stor_dict
+
         return True
     
     """Метод конвертации объекта в модели групп номенклатур"""

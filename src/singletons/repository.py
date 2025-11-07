@@ -1,4 +1,5 @@
-from typing import List, Any, Optional
+from typing import List, Any, Optional, Dict, Tuple
+from datetime import datetime
 from src.core.validator import Validator as vld
 from src.core.exceptions import ParamException
 from src.utils import get_properties
@@ -11,6 +12,9 @@ class Repository:
 
     # Словарь наименований моделей
     __data = dict()
+
+    # Вложенный словарь с данными о транзакциях
+    __transactions_data: Dict[str, Dict[str, List[Tuple[datetime, float]]]]
 
     # Ключ для единиц измерения
     measure_unit_key: str = "measure_units"
@@ -46,12 +50,23 @@ class Repository:
         return [getattr(Repository, f) for f in get_properties(Repository)
                 if f.endswith("_key")]
     
+    """Данные о транзакциях"""
+    @property
+    def transactions_data(self) -> Dict[str, Dict[str, List[Tuple[datetime, float]]]]:
+        return self.__transactions_data
+    
+    @transactions_data.setter
+    def transactions_data(self, value: Dict):
+        vld.is_dict(value, "transactions_data")
+        self.__transactions_data = value
+
     """Инициализация списков в словаре данных"""    
     def initalize(self):
         # Все ключи будут ссылаться на словари формата name: object
         # с соответствующими объектами
         for key in Repository.keys():
             self.data[key] = dict()
+        self.transactions_data = dict()
     
     """Метод получения объекта в памяти по имени"""
     def get_by_name(self, name: str) -> Optional[Any]:
