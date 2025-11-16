@@ -1,4 +1,5 @@
 from typing import Any, List
+from datetime import datetime, date
 from src.core.exceptions import ParamException
 from src.core.abstract_model import AbstractModel
 
@@ -71,4 +72,22 @@ def obj_to_dict(object_: Any) -> dict:
 """Функция проверки объекта на примитивный тип"""
 def is_primitive(object_: Any) -> bool:
     type_ = type(object_)
-    return type_ in [bool, int, float, str] or object_ is None
+    return type_ in [bool, int, float, str, date, datetime] or object_ is None
+
+
+"""Функция для получения значений вложенных полей"""
+def get_inner_value(obj, field: str) -> Any:
+    fields = field.split(".")
+    properties = get_properties(obj)
+    first = fields[0]
+    if first not in properties:
+        raise ParamException(
+            f"Model '{type(obj).__name__}' has not attribute '{first}'"
+        )
+    value = getattr(obj, fields[0])
+    if len(fields) == 1:
+        return value
+    elif value is None:
+        return None
+    else:
+        return get_inner_value(value, ".".join(fields[1:]))

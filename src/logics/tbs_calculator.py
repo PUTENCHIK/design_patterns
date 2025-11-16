@@ -1,9 +1,12 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 from datetime import date, datetime
 from src.core.validator import Validator as vld
+from src.dtos.filter_dto import FilterDto
 from src.logics.tbs_line import TbsLine
 from src.models.storage_model import StorageModel
 from src.models.transaction_model import TransactionModel
+from src.filtration.filter_operator import FilterOperator
+from src.filtration.filter_prototype import FilterPrototype
 from src.singletons.repository import Repository
 from src.singletons.start_service import StartService
 
@@ -23,15 +26,25 @@ class TbsCalculator:
 
         start = datetime(start.year, start.month, start.day)
         end = datetime(end.year, end.month, end.day, 23, 59, 59)
-        transactions = StartService().transactions
+        transactions = list(StartService().transactions.values())
+
+        prototype = FilterPrototype(transactions).filter([
+            FilterDto("storage.unique_code",
+                      FilterOperator.EQUAL,
+                      storage.unique_code),
+            FilterDto("datetime",
+                      FilterOperator.GRATER_EQUAL,
+                      start),
+        ])
+        transactions: List[TransactionModel] = prototype.data
+
         data: Dict[str, TbsLine] = dict()
-        for transaction in transactions.values():
-            if transaction.storage == storage and transaction.datetime <= end:
-                code = transaction.nomenclature.unique_code
-                if code not in data:
-                    data[code] = TbsLine(transaction)
-                line = data[code]
-                line.add(transaction, start, end)
+        for transaction in transactions:
+            code = transaction.nomenclature.unique_code
+            if code not in data:
+                data[code] = TbsLine(transaction)
+            line = data[code]
+            line.add(transaction, start, end)
 
         tbs_keys = data.keys()
         all_keys = StartService().data[Repository.nomenclatures_key].keys()
