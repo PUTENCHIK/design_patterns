@@ -15,7 +15,7 @@ from src.logics.tbs_calculator import TbsCalculator
 from src.logics.factory_entities import FactoryEntities
 from src.logics.factory_converters import FactoryConverters
 
-from src.filtration.filter_operator import FilterOperator
+from src.filtration.filter_operator import FilterOperator as op
 from src.filtration.filter_prototype import FilterPrototype
 
 from src.singletons.repository import Repository
@@ -153,7 +153,7 @@ def save_all_data():
 @app.get("/api/catalog/filtration/operators")
 def get_filtration_operators():
     """Доступные операторы фильтрации моделей"""
-    content = [operator.value for operator in FilterOperator]
+    content = [operator.value for operator in op]
     return JsonResponse(content)
 
 

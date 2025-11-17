@@ -5,7 +5,7 @@ from src.dtos.filter_dto import FilterDto
 from src.logics.tbs_line import TbsLine
 from src.models.storage_model import StorageModel
 from src.models.transaction_model import TransactionModel
-from src.filtration.filter_operator import FilterOperator
+from src.filtration.filter_operator import FilterOperator as op
 from src.filtration.filter_prototype import FilterPrototype
 from src.singletons.repository import Repository
 from src.singletons.start_service import StartService
@@ -30,10 +30,10 @@ class TbsCalculator:
 
         prototype = FilterPrototype(transactions).filter([
             FilterDto("storage.unique_code",
-                      FilterOperator.EQUAL,
+                      op.EQUAL,
                       storage.unique_code),
             FilterDto("datetime",
-                      FilterOperator.GRATER_EQUAL,
+                      op.GRATER_EQUAL,
                       start),
         ])
         transactions: List[TransactionModel] = prototype.data

@@ -2,12 +2,9 @@ from typing import List
 from datetime import datetime
 from src.core.validator import Validator as vld
 from src.core.exceptions import OperationException
-from src.dtos.filter_dto import FilterDto
 from src.models.transaction_model import TransactionModel
 from src.models.measure_unit_model import MeasureUnitModel
 from src.models.nomenclature_model import NomenclatureModel
-from src.filtration.filter_operator import FilterOperator
-from src.filtration.filter_prototype import FilterPrototype
 
 
 """Объект для хранения информации ОСВ об одной номенклатуре"""

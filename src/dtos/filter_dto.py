@@ -1,7 +1,7 @@
 from typing import Any, Optional
 from src.core.validator import Validator as vld
 from src.core.abstract_dto import AbstractDto
-from src.filtration.filter_operator import FilterOperator
+from src.filtration.filter_operator import FilterOperator as op
 
 
 """DTO для хранения данных о фильтере моделей"""
@@ -10,7 +10,7 @@ class FilterDto(AbstractDto):
     __field: str
 
     # Оператор фильтра
-    __operator: FilterOperator
+    __operator: op
 
     # Значение для сравнения со значением поля модели
     __value: Any
@@ -18,7 +18,7 @@ class FilterDto(AbstractDto):
     def __init__(
         self,
         field: Optional[str] = None,
-        operator: Optional[FilterOperator] = None,
+        operator: Optional[op] = None,
         value: Optional[Any] = None,
     ):
         super().__init__()
@@ -44,12 +44,12 @@ class FilterDto(AbstractDto):
     
     """Оператор фильтра"""
     @property
-    def operator(self) -> FilterOperator:
+    def operator(self) -> op:
         return self.__operator
     
     @operator.setter
-    def operator(self, value: FilterOperator):
-        vld.validate(value, FilterOperator, "operator")
+    def operator(self, value: op):
+        vld.validate(value, op, "operator")
         self.__operator = value
     
     """Значение для сравнения"""

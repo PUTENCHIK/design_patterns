@@ -3,7 +3,7 @@ from typing import List, Self, Any
 from src.core.exceptions import ParamException
 from src.core.base_prototype import BasePrototype
 from src.dtos.filter_dto import FilterDto
-from src.filtration.filter_operator import FilterOperator
+from src.filtration.filter_operator import FilterOperator as op
 from src.utils import is_primitive, get_inner_value
 
 
@@ -11,12 +11,12 @@ from src.utils import is_primitive, get_inner_value
 class FilterPrototype(BasePrototype):
 
     __match_operators = {
-        FilterOperator.EQUAL: operator.eq,
-        FilterOperator.NOT_EQUAL: operator.ne,
-        FilterOperator.GRATER: operator.gt,
-        FilterOperator.LESSER: operator.lt,
-        FilterOperator.GRATER_EQUAL: operator.ge,
-        FilterOperator.LESSER_EQUAL: operator.le,
+        op.EQUAL: operator.eq,
+        op.NOT_EQUAL: operator.ne,
+        op.GRATER: operator.gt,
+        op.LESSER: operator.lt,
+        op.GRATER_EQUAL: operator.ge,
+        op.LESSER_EQUAL: operator.le,
     }
     
     def __init__(self, data):
@@ -52,11 +52,11 @@ class FilterPrototype(BasePrototype):
         left: Any,
         filter: FilterDto
     ) -> bool:
-        if filter.operator == FilterOperator.LIKE:
-            return left in str(filter.value)
-        elif filter.operator == FilterOperator.CONTAINS:
-            return left is not None and str(filter.value) in left
+        if filter.operator == op.LIKE:
+            return str(left) in str(filter.value)
+        elif filter.operator == op.CONTAINS:
+            return left is not None and str(filter.value) in str(left)
         else:
-            op = self.__match_operators[filter.operator]
-            return op(left, filter.value)
+            oper = self.__match_operators[filter.operator]
+            return oper(left, filter.value)
     

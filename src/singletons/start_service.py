@@ -130,12 +130,12 @@ class StartService:
             return False
         
         for item in items:
-            # Если объект с таким же именем уже существует, то пропускаем
-            if self.__repository.get(name=item.get("name", "-")):
-                continue
             
             dto = dto_type().load(item)
             model = model_type.from_dto(dto, self.__repository)
+            # Если объект с таким же именем уже существует, то пропускаем
+            if self.__repository.get(name=model.name):
+                continue
             self.__repository.data[repo_key][model.unique_code] = model
 
         return True
@@ -213,14 +213,6 @@ class StartService:
     """Метод вызова методов генерации эталонных данных"""
     def start(self, file_name: str):
         new_file = pathlib.Path(file_name)
-        sm = SettingsManager()
-        if self.file_name == new_file:
-            if sm.settings.first_start:
-                self.file_name = new_file
-                self.repository.initalize()
-                self.load()
-        else:
-            self.file_name = new_file
-            self.repository.initalize()
-            self.load()
-        sm.settings.first_start = False
+        self.file_name = new_file.absolute()
+        # self.repository.initalize()
+        self.load()
