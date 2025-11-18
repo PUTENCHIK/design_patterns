@@ -1,5 +1,5 @@
 import operator
-from typing import List, Self, Any
+from typing import List, Self, Any, Optional
 from src.core.exceptions import ParamException
 from src.core.base_prototype import BasePrototype
 from src.dtos.filter_dto import FilterDto
@@ -22,17 +22,20 @@ class FilterPrototype(BasePrototype):
     def __init__(self, data):
         super().__init__(data)
     
-    def clone(self, data = None):
-        return super().clone(data)
+    # def clone(self, data = None):
+    #     return super().clone(data)
     
-    def filter(
+    def clone(
         self,
-        filters: List[FilterDto]
+        data: Optional[List[FilterDto]] = None
     ) -> Self:
+        if data is None:
+            return super().clone()
+        
         result = list()
         for model in self.data:
             flag = True
-            for filter in filters:
+            for filter in data:
                 value = get_inner_value(model, filter.field)
                 if not is_primitive(value):
                     raise ParamException(
@@ -45,7 +48,7 @@ class FilterPrototype(BasePrototype):
             if flag:
                 result += [model]
         
-        return self.clone(result)
+        return super().clone(result)
     
     def compare(
         self,

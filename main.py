@@ -104,7 +104,32 @@ def get_recipe(unique_code: str):
     return JsonResponse(result)
 
 
-@app.post("/api/tbs")
+@app.get("/api/tbs")
+def get_tbs(
+    storage_code: str,
+    start: date,
+    end: date, 
+):
+    """
+    Таблица оборотно-сальдовой ведомости (Trial Balance Sheet, TBS)
+    - `storage_code`: уникальный код склада
+    - `start`: начальная дата отчёта
+    - `end`: дата окончания отчёта
+    """
+    storage = start_service.repository.get(unique_code=storage_code)
+    if storage is None:
+        return ErrorResponse(f"Storage with code '{storage_code}' is null")
+    
+    if start >= end:
+        return ErrorResponse(f"End date must be later than start date")
+    
+    tbs_lines = TbsCalculator.calculate(storage, start, end)
+    return HTMLResponse(
+        factory_entities.create(ResponseFormat.HTML_TABLE).build(tbs_lines)
+    )
+
+
+@app.post("/api/tbs/filtration")
 def get_tbs(
     storage_code: str,
     start: date,
@@ -112,7 +137,8 @@ def get_tbs(
     filters: Optional[List[FilterScheme]] = None
 ):
     """
-    Таблица оборотно-сальдовой ведомости (Trial Balance Sheet, TBS)
+    Таблица оборотно-сальдовой ведомости (Trial Balance Sheet, TBS) с полем 
+    для дополнительной фильтрации строк ОСВ
     - `storage_code`: уникальный код склада
     - `start`: начальная дата отчёта
     - `end`: дата окончания отчёта
@@ -128,7 +154,7 @@ def get_tbs(
     tbs_lines = TbsCalculator.calculate(storage, start, end)
     try:
         if filters is not None:
-            prototype = FilterPrototype(tbs_lines).filter(filters)
+            prototype = FilterPrototype(tbs_lines).clone(filters)
             tbs_lines = prototype.data
         return HTMLResponse(
             factory_entities.create(ResponseFormat.HTML_TABLE)\
@@ -175,7 +201,7 @@ def get_filtered_data(model_type: str, filters: List[FilterScheme]):
                    for filter in filters]
     
     try:
-        prototype = FilterPrototype(models).filter(filters_dto)
+        prototype = FilterPrototype(models).clone(filters_dto)
         models = prototype.data
         result = factory_converters.convert(models)
         return JsonResponse(result)

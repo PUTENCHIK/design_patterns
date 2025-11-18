@@ -28,7 +28,7 @@ class TbsCalculator:
         end = datetime(end.year, end.month, end.day, 23, 59, 59)
         transactions = list(StartService().transactions.values())
 
-        prototype = FilterPrototype(transactions).filter([
+        prototype = FilterPrototype(transactions).clone([
             FilterDto("storage.unique_code",
                       op.EQUAL,
                       storage.unique_code),

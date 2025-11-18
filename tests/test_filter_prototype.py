@@ -24,7 +24,7 @@ class TestFilterPrototype(unittest.TestCase):
         transactions = list(self.__start_service.transactions.values())
         prototype = FilterPrototype(transactions)
         # Действие
-        filtered = prototype.filter([
+        filtered = prototype.clone([
             FilterDto("nomenclature.name", op.EQUAL, "соль"),
             FilterDto("measure_unit.name", op.LIKE, "грамм")
         ])
@@ -39,7 +39,7 @@ class TestFilterPrototype(unittest.TestCase):
         transactions = list(self.__start_service.transactions.values())
         prototype = FilterPrototype(transactions)
         # Действие
-        filtered = prototype.filter([
+        filtered = prototype.clone([
             FilterDto("datetime", op.GRATER_EQUAL, datetime(2025, 3, 1))
         ])
         # Проверка
@@ -52,7 +52,7 @@ class TestFilterPrototype(unittest.TestCase):
         prototype = FilterPrototype(transactions)
         # Проверка
         with self.assertRaises(ParamException):
-            prototype.filter([
+            prototype.clone([
                 FilterDto("datetime.name", op.GRATER, datetime(2025, 1, 1))
             ])
     
@@ -62,7 +62,7 @@ class TestFilterPrototype(unittest.TestCase):
         units = list(self.__start_service.measure_units.values())
         prototype = FilterPrototype(units)
         # Подготовка
-        filtered = prototype.filter([
+        filtered = prototype.clone([
             FilterDto("name", op.LIKE, "грамм литр"),
             FilterDto("coefficient", op.EQUAL, 1)
         ])
