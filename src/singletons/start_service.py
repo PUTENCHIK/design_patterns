@@ -1,7 +1,8 @@
 import json
-from typing import Optional, Dict
+import pathlib
+from typing import Optional, Dict, Union
 from src.core.validator import Validator as vld
-from src.core.exceptions import OperationException
+from src.core.exceptions import OperationException, ParamException
 from src.dtos.storage_dto import StorageDto
 from src.dtos.transaction_dto import TransactionDto
 from src.dtos.measure_unit_dto import MeasureUnitDto
@@ -24,7 +25,7 @@ class StartService:
     __instance = None
 
     # Путь до файла с загружаемыми объектами
-    __file_name: str = ""
+    __file_name: Optional[pathlib.Path] = None
 
     # Ссылка на объект Repository
     __repository: Optional[Repository] = Repository()
@@ -37,12 +38,19 @@ class StartService:
 
     """Поле пути до файла с загружаемыми объектами"""
     @property
-    def file_name(self) -> str:
+    def file_name(self) -> pathlib.Path:
         return self.__file_name
     
     @file_name.setter
-    def file_name(self, value: str):
-        self.__file_name = vld.is_file_exists(value)
+    def file_name(self, value: Union[str, pathlib.Path]):
+        if isinstance(value, pathlib.Path):
+            if not value.exists():
+                raise ParamException(
+                    f"File '{value}' doesn't exist"
+                )
+            self.__file_name = value
+        else:
+            self.__file_name = vld.is_file_exists(value)
 
     """Словарь данных репозитория"""
     @property
@@ -122,12 +130,12 @@ class StartService:
             return False
         
         for item in items:
-            # Если объект с таким же именем уже существует, то пропускаем
-            if self.__repository.get(unique_code=item.get("unique_code", "-")):
-                continue
             
             dto = dto_type().load(item)
             model = model_type.from_dto(dto, self.__repository)
+            # Если объект с таким же именем уже существует, то пропускаем
+            if self.__repository.get(name=model.name):
+                continue
             self.__repository.data[repo_key][model.unique_code] = model
 
         return True
@@ -204,8 +212,7 @@ class StartService:
     
     """Метод вызова методов генерации эталонных данных"""
     def start(self, file_name: str):
-        self.file_name = file_name
-        sm = SettingsManager()
-        if sm.settings.first_start:
-            self.load()
-        sm.settings.first_start = False
+        new_file = pathlib.Path(file_name)
+        self.file_name = new_file.absolute()
+        # self.repository.initalize()
+        self.load()
