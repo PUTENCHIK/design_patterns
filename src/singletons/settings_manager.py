@@ -1,4 +1,5 @@
 import json
+from datetime import date, datetime
 from src.core.validator import Validator as vld
 from src.models.settings_model import SettingsModel
 
@@ -49,13 +50,19 @@ class SettingsManager:
         try:
             with open(self.file_name, mode='r', encoding='utf-8') as file:
                 settings = json.load(file)
-                self.convert_company_data(settings["company"])
-                self.convert_response_format(
-                    settings["default_response_format"]
+                return (
+                    self.convert_company_data(
+                        settings["company"]) and
+                    self.convert_response_format(
+                        settings["default_response_format"]) and
+                    self.convert_first_start(
+                        settings["first_start"]) and
+                    self.convert_datetime_format(
+                        settings["datetime_format"]) and
+                    self.convert_block_date(
+                        settings["block_date"]
+                    )
                 )
-                self.convert_first_start(settings["first_start"])
-                self.convert_datetime_format(settings["datetime_format"])
-                return True
         except:
             return False
     
@@ -105,6 +112,15 @@ class SettingsManager:
             self.settings.datetime_format = data
             return True
         except KeyError:
+            return False
+    
+    """Метод загрузки даты блокировки складских остатков"""
+    def convert_block_date(self, data: str) -> bool:
+        try:
+            dt = datetime.strptime(data, "%Y-%m-%d")
+            self.settings.block_date = date(dt.year, dt.month, dt.day)
+            return True
+        except Exception:
             return False
     
     """Метод инициализации стандартных значений полей"""

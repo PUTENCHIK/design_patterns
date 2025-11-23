@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import List, Dict
 from datetime import date, datetime
 from src.core.validator import Validator as vld
 from src.dtos.filter_dto import FilterDto
@@ -18,7 +18,9 @@ class TbsCalculator:
     def calculate(
         storage: StorageModel, 
         start: date, 
-        end: date
+        end: date,
+        zero_turnovers: bool = True,
+        without_start_count: bool = False
     ) -> List[TbsLine]:
         vld.validate(storage, StorageModel, "storage")
         vld.validate(start, date, "start date")
@@ -28,14 +30,22 @@ class TbsCalculator:
         end = datetime(end.year, end.month, end.day, 23, 59, 59)
         transactions = list(StartService().transactions.values())
 
-        prototype = FilterPrototype(transactions).clone([
+        filters = [
             FilterDto("storage.unique_code",
                       op.EQUAL,
                       storage.unique_code),
             FilterDto("datetime",
-                      op.GRATER_EQUAL,
-                      start),
-        ])
+                      op.LESSER_EQUAL,
+                      end),
+        ]
+        if without_start_count:
+            filters += [
+                FilterDto("datetime",
+                          op.GRATER_EQUAL,
+                          start)
+            ]
+
+        prototype = FilterPrototype(transactions).clone(filters)
         transactions: List[TransactionModel] = prototype.data
 
         data: Dict[str, TbsLine] = dict()
@@ -46,18 +56,19 @@ class TbsCalculator:
             line = data[code]
             line.add(transaction, start, end)
 
-        tbs_keys = data.keys()
-        all_keys = StartService().data[Repository.nomenclatures_key].keys()
-        other_keys = set(all_keys) - set(tbs_keys)
-        for key in other_keys:
-            nomenclature = StartService().repository.get(unique_code=key)
-            if nomenclature is None:
-                continue
-            data[key] = TbsLine(TransactionModel(
-                nomenclature=nomenclature,
-                storage=storage,
-                count=0,
-                measure_unit=nomenclature.measure_unit
-            ))
+        if zero_turnovers:
+            tbs_keys = data.keys()
+            all_keys = StartService().data[Repository.nomenclatures_key].keys()
+            other_keys = set(all_keys) - set(tbs_keys)
+            for key in other_keys:
+                nomenclature = StartService().repository.get(unique_code=key)
+                if nomenclature is None:
+                    continue
+                data[key] = TbsLine(TransactionModel(
+                    nomenclature=nomenclature,
+                    storage=storage,
+                    count=0,
+                    measure_unit=nomenclature.measure_unit
+                ))
 
         return list(data.values())

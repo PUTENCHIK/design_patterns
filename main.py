@@ -14,6 +14,7 @@ from src.dtos.filter_dto import FilterDto
 from src.logics.tbs_calculator import TbsCalculator
 from src.logics.factory_entities import FactoryEntities
 from src.logics.factory_converters import FactoryConverters
+from src.logics.remains_calculator import RemainsCalculator
 
 from src.filtration.filter_operator import FilterOperator as op
 from src.filtration.filter_prototype import FilterPrototype
@@ -207,11 +208,53 @@ def get_filtered_data(model_type: str, filters: List[FilterScheme]):
         return JsonResponse(result)
     except Exception as e:
         return ErrorResponse(e)
-    
+
+
+@app.get("/api/remains/block-date")
+def get_block_date():
+    """
+    Дата блокировки складских оборотов
+    """
+    return JsonResponse(
+        {"value": str(settings_manager.settings.block_date)}
+    )
+
+
+@app.post("/api/remains/block-date")
+def set_block_date(value: date):
+    """
+    Установка новой даты блокировки складских оборотов
+    """
+    try:
+        if settings_manager.settings.block_date != value:
+            settings_manager.settings.block_date = value
+            start_service.save_nomenclature_remains()
+            message = "block date updated"
+        else:
+            message = f"block date already is {value}"
+        return JsonResponse(
+            {"result": message}
+        )
+    except Exception as ex:
+        return ErrorResponse(
+            f"Failed to set new block date: {ex}"
+        )
+
+
+@app.get("/api/remains")
+def get_remains_on_date(date_: date):
+    """
+    Получение остатков на складах на момент переданной даты
+    """
+    remains = RemainsCalculator.calculate(date_)
+    return HTMLResponse(
+        factory_entities.create(ResponseFormat.HTML_TABLE).build(remains)
+    )
+
 
 if __name__ == "__main__":
     settings_manager.load(settings_file)
     start_service.start(settings_file)
     uvicorn.run(app=app,
                 host="localhost",
-                port=8081)
+                port=8082)

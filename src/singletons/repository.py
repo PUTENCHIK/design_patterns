@@ -30,6 +30,9 @@ class Repository:
     # Ключ для транзакций
     transactions_key: str = "transactions"
 
+    # Ключ для остатков номенклатур закрытого периода
+    remains_key: str = "remains"
+
     def __new__(cls):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
@@ -51,7 +54,11 @@ class Repository:
         # Все ключи будут ссылаться на словари формата name: object
         # с соответствующими объектами
         for key in Repository.keys():
-            self.data[key] = dict()
+            self.clear(key)
+    
+    """Метод обнуления раздела репозитория с определёнными моделями"""
+    def clear(self, key: str):
+        self.data[key] = dict()
     
     """Метод получения объекта в памяти по имени"""
     def get_by_name(self, name: str) -> Optional[Any]:

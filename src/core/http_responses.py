@@ -45,6 +45,7 @@ class FormatResponse(Response):
         "json": "application/json",
         "markdown": "text/markdown; charset=utf-8",
         "xml": "text/xml",
+        "html_table": "text/html",
     }
 
     def __init__(self, content: str, media_type: str):

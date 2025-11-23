@@ -1,4 +1,6 @@
+from datetime import date
 from src.core.validator import Validator as vld
+from src.core.exceptions import ParamException
 from src.core.abstract_model import AbstractModel
 from src.core.response_format import ResponseFormat
 from src.models.company_model import CompanyModel
@@ -20,6 +22,12 @@ class SettingsModel(AbstractModel):
 
     # Формат даты и времени
     __datetime_format: str
+
+    # Самая ранняя дата, с которой считаются остатки
+    start_date: date = date(1900, 1, 1)
+
+    # Дата блокировки складских остатков
+    __block_date: date
 
     def __init__(self):
         super().__init__()
@@ -60,6 +68,20 @@ class SettingsModel(AbstractModel):
         vld.is_str(value, "datetime_format")
         self.__datetime_format = value
     
+    """Поле даты закрытого периода"""
+    @property
+    def block_date(self) -> date:
+        return self.__block_date
+    
+    @block_date.setter
+    def block_date(self, value: date):
+        vld.validate(value, date, "block_date")
+        if value <= self.start_date:
+            raise ParamException(
+                f"Block date must be later than start date: {self.start_date}"
+            )
+        self.__block_date = value
+    
     """Фабричный метод из DTO"""
     @staticmethod
     def from_dto(dto, repo):
@@ -71,3 +93,4 @@ class SettingsModel(AbstractModel):
         self.__response_format = ResponseFormat.JSON
         self.__first_start = True
         self.__datetime_format = "%Y-%m-%d %H:%M:%S"
+        self.__block_date = self.start_date

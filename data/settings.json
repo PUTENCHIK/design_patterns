@@ -10,6 +10,7 @@
     "default_response_format": "json",
     "first_start": true,
     "datetime_format": "%Y-%m-%d %H:%M:%S",
+    "block_date": "2025-01-16",
     "models": {
         "nomenclature_groups": [
             {

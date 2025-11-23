@@ -1,20 +1,25 @@
 import json
 import pathlib
 from typing import Optional, Dict, Union
+
 from src.core.validator import Validator as vld
 from src.core.exceptions import OperationException, ParamException
+
 from src.dtos.storage_dto import StorageDto
 from src.dtos.transaction_dto import TransactionDto
 from src.dtos.measure_unit_dto import MeasureUnitDto
 from src.dtos.nomenclature_dto import NomenclatureDto
 from src.dtos.nomenclature_group_dto import NomenclatureGroupDto
 from src.dtos.recipe_dto import RecipeDto
+
 from src.models.recipe_model import RecipeModel
+from src.models.remain_model import RemainModel
 from src.models.storage_model import StorageModel
 from src.models.transaction_model import TransactionModel
 from src.models.measure_unit_model import MeasureUnitModel
 from src.models.nomenclature_model import NomenclatureModel
 from src.models.nomenclature_group_model import NomenclatureGroupModel
+
 from src.singletons.repository import Repository
 from src.singletons.settings_manager import SettingsManager
 
@@ -50,7 +55,7 @@ class StartService:
                 )
             self.__file_name = value
         else:
-            self.__file_name = vld.is_file_exists(value)
+            self.__file_name = vld.is_file_exists(value).absolute()
 
     """Словарь данных репозитория"""
     @property
@@ -92,6 +97,11 @@ class StartService:
     def transactions(self) -> Dict[str, TransactionModel]:
         return self.data[Repository.transactions_key]
 
+    """Складские остатки в репозитории"""
+    @property
+    def remains(self) -> Dict[str, RemainModel]:
+        return self.data[Repository.remains_key]
+
     """Метод загрузки эталонных моделей и рецептов из файла настроек"""
     def load(self) -> bool:
         if not self.file_name:
@@ -101,7 +111,7 @@ class StartService:
         with open(self.file_name, mode='r', encoding="utf-8") as file:
             objects = json.load(file)
             data = objects["models"]
-            return self.convert(data)
+            return self.convert(data) and self.save_nomenclature_remains()
     
     """Универсальный метод чтения и записи моделей из файла с помощью DTO
     
@@ -203,16 +213,39 @@ class StartService:
     """Метод конвертации объекта в модели"""
     def convert(self, data: dict) -> bool:
         vld.is_dict(data, "data")
-        self.__convert_nomenclature_groups(data)
-        self.__convert_measure_units(data)
-        self.__convert_nomenlatures(data)
-        self.__convert_recipes(data)
-        self.__convert_storages(data)
-        self.__convert_transactions(data)
+        return (self.__convert_nomenclature_groups(data) and 
+            self.__convert_measure_units(data) and 
+            self.__convert_nomenlatures(data) and 
+            self.__convert_recipes(data) and 
+            self.__convert_storages(data) and 
+            self.__convert_transactions(data))
     
+    """
+    Метод сохранения в репозиторий остатков на складах на момент
+    даты блокировки
+    """
+    def save_nomenclature_remains(self) -> bool:
+        from src.logics.remains_calculator import RemainsCalculator
+        repo_key = Repository.remains_key
+        self.__repository.clear(repo_key)
+
+        remains = RemainsCalculator.get_remains_for_period(
+            SettingsManager().settings.start_date,
+            SettingsManager().settings.block_date,
+        )
+        for remain in remains:
+            self.__repository.data[repo_key][remain.unique_code] = remain
+        
+        return True
+
     """Метод вызова методов генерации эталонных данных"""
-    def start(self, file_name: str):
-        new_file = pathlib.Path(file_name)
-        self.file_name = new_file.absolute()
-        # self.repository.initalize()
-        self.load()
+    def start(self, file_name: str) -> bool:
+        new_file = pathlib.Path(file_name).absolute()
+        sm = SettingsManager()
+        if sm.settings.first_start or new_file != self.file_name:
+            self.file_name = new_file.absolute()
+            self.repository.initalize()
+            sm.settings.first_start = False
+            return self.load()
+        else:
+            return False    
