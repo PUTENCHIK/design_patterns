@@ -10,7 +10,7 @@ class StorageDto(AbstractDto):
     # Наименование DTO (наследуется от AbstractDto)
 
     # Адрес
-    __address: str
+    __address: str = 0
 
     def __init__(self):
         super().__init__()

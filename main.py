@@ -3,6 +3,7 @@ from typing import List, Optional
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from datetime import date
+from contextlib import asynccontextmanager
 
 from src.core.schemes import FilterScheme
 from src.core.response_format import ResponseFormat
@@ -25,12 +26,23 @@ from src.singletons.settings_manager import SettingsManager
 
 
 settings_file = "data/settings.json"
+remains_file = "data/remains.json"
 start_service = StartService()
 settings_manager = SettingsManager()
 factory_entities = FactoryEntities()
 factory_converters = FactoryConverters()
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    settings_manager.load(settings_file)
+    start_service.start(settings_file, remains_file)
+    yield
+    settings_manager.save_block_date()
+    start_service.save_remains()
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/api/status")
@@ -228,7 +240,7 @@ def set_block_date(value: date):
     try:
         if settings_manager.settings.block_date != value:
             settings_manager.settings.block_date = value
-            start_service.save_nomenclature_remains()
+            start_service.calc_remains()
             message = "block date updated"
         else:
             message = f"block date already is {value}"
@@ -253,8 +265,6 @@ def get_remains_on_date(date_: date):
 
 
 if __name__ == "__main__":
-    settings_manager.load(settings_file)
-    start_service.start(settings_file)
     uvicorn.run(app=app,
                 host="localhost",
                 port=8082)

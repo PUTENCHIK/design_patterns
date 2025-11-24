@@ -74,13 +74,16 @@ class MeasureUnitModel(AbstractModel):
     """Фабричный метод из DTO"""
     @staticmethod
     def from_dto(dto: MeasureUnitDto, repo: Repository) -> Self:
-        base_unit = None if dto.base_unit is None \
-            else repo.get_by_name(dto.base_unit)
-        return MeasureUnitModel(
+        base_unit = None if dto.base_unit_code is None \
+            else repo.get(unique_code=dto.base_unit_code)
+        model = MeasureUnitModel(
             coef=dto.coefficient,
             name=dto.name,
             base_unit=base_unit
         )
+        model.unique_code = dto.unique_code
+
+        return model
 
     """Метод, возвращающий базовую единицу измерения без базовой единицы"""
     def get_base_unit(self) -> Tuple[Self, float]:

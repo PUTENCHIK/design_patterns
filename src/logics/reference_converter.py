@@ -7,8 +7,16 @@ from src.utils import get_properties
 """Конвертер, обрабатывающий объекты, являющиеся AbstractModel"""
 class ReferenceConverter(AbstractConverter):
     
-    def __init__(self):
+    # Если True, то модели конвертируются в объекты, а иначе - заменяются 
+    # уникальным кодом
+    is_deep: bool
+
+    def __init__(
+        self,
+        is_deep: bool = True
+    ):
         super().__init__()
+        self.is_deep = is_deep
     
     """Переопределённый метод convert
     
@@ -27,8 +35,14 @@ class ReferenceConverter(AbstractConverter):
             value = getattr(object_, prop)
 
             if isinstance(value, AbstractModel):
-                result[prop] = self.convert(value)
+                if self.is_deep:
+                    result[prop] = self.convert(value)
+                else:
+                    result[prop + "_code"] = factory \
+                        .create(value.unique_code, self.is_deep) \
+                        .convert(value.unique_code)
             else:
-                result[prop] = factory.create(value).convert(value)
+                result[prop] = factory.create(value, self.is_deep) \
+                    .convert(value)
 
         return result

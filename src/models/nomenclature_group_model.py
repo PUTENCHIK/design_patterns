@@ -20,4 +20,6 @@ class NomenclatureGroupModel(AbstractModel):
     """Фабричный метод из DTO"""
     @staticmethod
     def from_dto(dto: NomenclatureGroupDto, repo: Repository) -> Self:
-        return NomenclatureGroupModel(name=dto.name)
+        model = NomenclatureGroupModel(name=dto.name)
+        model.unique_code = dto.unique_code
+        return model

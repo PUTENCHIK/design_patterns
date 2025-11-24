@@ -5,12 +5,16 @@ from typing import Optional, Dict, Union
 from src.core.validator import Validator as vld
 from src.core.exceptions import OperationException, ParamException
 
+from src.dtos.recipe_dto import RecipeDto
+from src.dtos.remain_dto import RemainDto
 from src.dtos.storage_dto import StorageDto
 from src.dtos.transaction_dto import TransactionDto
 from src.dtos.measure_unit_dto import MeasureUnitDto
 from src.dtos.nomenclature_dto import NomenclatureDto
 from src.dtos.nomenclature_group_dto import NomenclatureGroupDto
-from src.dtos.recipe_dto import RecipeDto
+
+from src.logics.factory_entities import FactoryEntities
+from src.logics.factory_converters import FactoryConverters
 
 from src.models.recipe_model import RecipeModel
 from src.models.remain_model import RemainModel
@@ -30,7 +34,10 @@ class StartService:
     __instance = None
 
     # Путь до файла с загружаемыми объектами
-    __file_name: Optional[pathlib.Path] = None
+    __models_file: pathlib.Path
+
+    # Путь до файла с сохранёнными остатками номенклатуры
+    __remains_file: Optional[pathlib.Path] = None
 
     # Ссылка на объект Repository
     __repository: Optional[Repository] = Repository()
@@ -43,19 +50,31 @@ class StartService:
 
     """Поле пути до файла с загружаемыми объектами"""
     @property
-    def file_name(self) -> pathlib.Path:
-        return self.__file_name
+    def models_file(self) -> pathlib.Path:
+        return self.__models_file
     
-    @file_name.setter
-    def file_name(self, value: Union[str, pathlib.Path]):
+    @models_file.setter
+    def models_file(self, value: Union[str, pathlib.Path]):
         if isinstance(value, pathlib.Path):
             if not value.exists():
                 raise ParamException(
                     f"File '{value}' doesn't exist"
                 )
-            self.__file_name = value
+            self.__models_file = value
         else:
-            self.__file_name = vld.is_file_exists(value).absolute()
+            self.__models_file = vld.is_file_exists(value).absolute()
+    
+    """Поле пути до файла с сохранёнными остатками"""
+    @property
+    def remains_file(self) -> Optional[pathlib.Path]:
+        return self.__remains_file
+    
+    @remains_file.setter
+    def remains_file(self, value: Union[str, pathlib.Path]):
+        vld.validate(value, (str, pathlib.Path), "remains file path")
+        if isinstance(value, str):
+            value = pathlib.Path(value)
+        self.__remains_file = value.absolute()
 
     """Словарь данных репозитория"""
     @property
@@ -103,15 +122,15 @@ class StartService:
         return self.data[Repository.remains_key]
 
     """Метод загрузки эталонных моделей и рецептов из файла настроек"""
-    def load(self) -> bool:
-        if not self.file_name:
+    def load_models(self) -> bool:
+        if not self.models_file:
             raise OperationException(
                 f"Data can't be loaded, file_name field is empty"
             )
-        with open(self.file_name, mode='r', encoding="utf-8") as file:
+        with open(self.models_file, mode='r', encoding="utf-8") as file:
             objects = json.load(file)
             data = objects["models"]
-            return self.convert(data) and self.save_nomenclature_remains()
+            return self.convert(data)
     
     """Универсальный метод чтения и записи моделей из файла с помощью DTO
     
@@ -140,12 +159,8 @@ class StartService:
             return False
         
         for item in items:
-            
             dto = dto_type().load(item)
             model = model_type.from_dto(dto, self.__repository)
-            # Если объект с таким же именем уже существует, то пропускаем
-            if self.__repository.get(name=model.name):
-                continue
             self.__repository.data[repo_key][model.unique_code] = model
 
         return True
@@ -171,10 +186,10 @@ class StartService:
         )
     
     """Метод конвертации объекта в модели номенклатур"""
-    def __convert_nomenlatures(self, data: dict) -> bool:
+    def __convert_nomenclatures(self, data: dict) -> bool:
         return self.__convert_models(
             data=data,
-            data_key="nomenlatures",
+            data_key="nomenclatures",
             repo_key=Repository.nomenclatures_key,
             dto_type=NomenclatureDto,
             model_type=NomenclatureModel
@@ -210,12 +225,22 @@ class StartService:
             model_type=TransactionModel
         )
     
+    """Метод конвертации объекта в модели остатков"""
+    def __convert_remains(self, data: dict) -> bool:
+        return self.__convert_models(
+            data=data,
+            data_key="remains",
+            repo_key=Repository.remains_key,
+            dto_type=RemainDto,
+            model_type=RemainModel
+        )
+    
     """Метод конвертации объекта в модели"""
     def convert(self, data: dict) -> bool:
         vld.is_dict(data, "data")
         return (self.__convert_nomenclature_groups(data) and 
             self.__convert_measure_units(data) and 
-            self.__convert_nomenlatures(data) and 
+            self.__convert_nomenclatures(data) and 
             self.__convert_recipes(data) and 
             self.__convert_storages(data) and 
             self.__convert_transactions(data))
@@ -224,7 +249,7 @@ class StartService:
     Метод сохранения в репозиторий остатков на складах на момент
     даты блокировки
     """
-    def save_nomenclature_remains(self) -> bool:
+    def calc_remains(self) -> bool:
         from src.logics.remains_calculator import RemainsCalculator
         repo_key = Repository.remains_key
         self.__repository.clear(repo_key)
@@ -237,15 +262,54 @@ class StartService:
             self.__repository.data[repo_key][remain.unique_code] = remain
         
         return True
+    
+    """Метод загрузки остатков номенклатур из файла"""
+    def load_remains(self) -> bool:
+        if self.remains_file is not None and self.remains_file.exists():
+            with open(self.remains_file, 'r', encoding='utf-8') as file:
+                data = json.load(file)
+                return self.__convert_remains(data)
+        else:
+            return self.calc_remains()
+
+    """Метод сохранения остатков номенклатур в файл"""
+    def save_remains(self) -> bool:
+        from src.logics.remains_calculator import RemainsCalculator
+
+        if self.remains_file is not None:
+            remains = RemainsCalculator.get_remains_for_period(
+                SettingsManager().settings.start_date,
+                SettingsManager().settings.block_date,
+            )
+
+            if len(remains) > 0:
+                result = {
+                    Repository.remains_key: FactoryConverters() \
+                        .convert(remains, False)
+                }
+                result = json.dumps(result, ensure_ascii=False, indent=4)
+                with open(self.remains_file, 'w', encoding='utf-8') as file:
+                    file.write(result)
+                    file.close()
+                return True
+        return False
 
     """Метод вызова методов генерации эталонных данных"""
-    def start(self, file_name: str) -> bool:
-        new_file = pathlib.Path(file_name).absolute()
+    def start(
+        self,
+        models_file: str,
+        remains_file: Optional[str] = None,
+    ) -> bool:
+        if remains_file is not None:
+            self.remains_file = remains_file
+
+        new_file = pathlib.Path(models_file).absolute()
         sm = SettingsManager()
-        if sm.settings.first_start or new_file != self.file_name:
-            self.file_name = new_file.absolute()
+        if sm.settings.first_start or new_file != self.models_file:
+            self.models_file = new_file.absolute()
             self.repository.initalize()
             sm.settings.first_start = False
-            return self.load()
+
+            return self.load_models() and self.load_remains()
         else:
-            return False    
+            return False

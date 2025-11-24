@@ -105,7 +105,7 @@ class RecipeModel(AbstractModel):
             IngredientModel.from_dto(ing_dto, repo)
             for ing_dto in dto.ingredients
         ]
-        return RecipeModel(
+        model = RecipeModel(
             name=dto.name,
             description=dto.description,
             portions=dto.portions,
@@ -113,3 +113,6 @@ class RecipeModel(AbstractModel):
             ingredients=ingredients,
             steps=dto.steps
         )
+        model.unique_code = dto.unique_code
+
+        return model

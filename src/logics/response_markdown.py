@@ -11,8 +11,12 @@ class ResponseMarkdown(AbstractResponse):
     def __init__(self):
         super().__init__()
     
-    def build(self, data: List[Any]) -> str:
-        super().build(data, ResponseFormat.MARKDOWN)
+    def build(
+        self,
+        data: List[Any],
+        is_deep: bool = True,
+    ) -> str:
+        super().build(data, ResponseFormat.MARKDOWN, is_deep)
 
         item = data[0]
         properties = get_properties(item)

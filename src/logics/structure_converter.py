@@ -8,8 +8,16 @@ from src.core.abstract_converter import AbstractConverter
 Обрабатывает объекты, являющиеся списками, кортежами и словарями"""
 class StructureConverter(AbstractConverter):
     
-    def __init__(self):
+    # Если True, то модели конвертируются в объекты, а иначе - заменяются 
+    # уникальным кодом
+    is_deep: bool
+
+    def __init__(
+        self,
+        is_deep: bool = True
+    ):
         super().__init__()
+        self.is_deep = is_deep
     
     """Переопределённый метод convert
     
@@ -24,12 +32,13 @@ class StructureConverter(AbstractConverter):
         if type(object_) is dict:
             result = dict()
             for key, value in object_.items():
-                result[key] = factory.create(value).convert(value)
+                result[key] = factory.create(value, self.is_deep) \
+                    .convert(value)
         else:
             result = list()
             vld.is_list_of_same(object_, "objects", True)
             if len(object_):
-                converter = factory.create(object_[0])
+                converter = factory.create(object_[0], self.is_deep)
                 for item in object_:
                     result += [converter.convert(item)]
 

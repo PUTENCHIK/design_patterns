@@ -1,9 +1,11 @@
 from typing import Union
 from src.core.validator import Validator as vld
 from src.core.abstract_model import AbstractModel
+from src.dtos.remain_dto import RemainDto
 from src.models.nomenclature_model import NomenclatureModel
 from src.models.storage_model import StorageModel
 from src.models.measure_unit_model import MeasureUnitModel
+from src.singletons.repository import Repository
 
 
 """Модель остатка на определённую дату"""
@@ -34,10 +36,10 @@ class RemainModel(AbstractModel):
         self.measure_unit = measure_unit
         self.value = value
     
-    """Фабричный метод из DTO"""
-    @staticmethod
-    def from_dto(dto, repo):
-        return super().from_dto(dto, repo)
+    """Поле наименования (процедурное)"""
+    @property
+    def name(self) -> str:
+        return f"остаток #{self.unique_code}"
 
     """Поле номенклатуры"""
     @property
@@ -84,3 +86,19 @@ class RemainModel(AbstractModel):
         return f"{self.storage.unique_code}_" \
             f"{self.nomenclature.unique_code}_" \
             f"{self.measure_unit.unique_code}"
+
+    """Фабричный метод из DTO"""
+    @staticmethod
+    def from_dto(dto: RemainDto, repo: Repository):
+        nomenclature = repo.get(unique_code=dto.nomenclature_code)
+        storage = repo.get(unique_code=dto.storage_code)
+        unit = repo.get(unique_code=dto.measure_unit_code)
+        model = RemainModel(
+            nomenclature=nomenclature,
+            storage=storage,
+            measure_unit=unit,
+            value=dto.value
+        )
+        model.unique_code = dto.unique_code
+
+        return model

@@ -3,14 +3,8 @@ from src.core.validator import Validator as vld
 from src.core.abstract_dto import AbstractDto
 
 
-"""DTO для модели TransactionModel"""
-class TransactionDto(AbstractDto):
-    # Уникальный код DTO (наследуется от AbstractDto)
-
-    # Наименование DTO (наследуется от AbstractDto)
-
-    # Дата и время проведения
-    __datetime: str = ""
+"""DTO для модели RemainModel"""
+class RemainDto(AbstractDto):
 
     # Номенклатура
     __nomenclature_code: str = ""
@@ -18,24 +12,17 @@ class TransactionDto(AbstractDto):
     # Склад
     __storage_code: str = ""
 
-    # Количество
-    __count: float = 0
-
     # Единица измерения
     __measure_unit_code: str = ""
-    
+
+    # Значение остатка
+    __value: float = 0
+
     def __init__(self):
         super().__init__()
-    
-    """Поле даты и времени"""
-    @property
-    def datetime(self) -> str:
-        return self.__datetime
-    
-    @datetime.setter
-    def datetime(self, value: str):
-        vld.is_str(value, "datetime")
-        self.__datetime = value
+
+    def load(self, data) -> Self:
+        return super().load(data)
     
     """Поле номенклатуры"""
     @property
@@ -57,16 +44,6 @@ class TransactionDto(AbstractDto):
         vld.is_str(value, "storage code")
         self.__storage_code = value
     
-    """Поле количества"""
-    @property
-    def count(self) -> float:
-        return self.__count
-    
-    @count.setter
-    def count(self, value: Union[int, float]):
-        vld.is_number(value, "count")
-        self.__count = float(value)
-    
     """Поле единицы измерения"""
     @property
     def measure_unit_code(self) -> str:
@@ -77,5 +54,12 @@ class TransactionDto(AbstractDto):
         vld.is_str(value, "measure unit code")
         self.__measure_unit_code = value
     
-    def load(self, data: dict) -> Self:
-        return super().load(data)
+    """Поле значения остатка"""
+    @property
+    def value(self) -> int:
+        return self.__value
+    
+    @value.setter
+    def value(self, value: Union[int, float]):
+        vld.is_number(value, "value")
+        self.__value = float(value)

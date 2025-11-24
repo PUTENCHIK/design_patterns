@@ -9,7 +9,7 @@ class MeasureUnitDto(AbstractDto):
     __coefficient: float = 1.0
 
     # Базовая единица измерения
-    __base_unit: Optional[str] = None
+    __base_unit_code: Optional[str] = None
 
     def __init__(self):
         super().__init__()
@@ -29,10 +29,10 @@ class MeasureUnitDto(AbstractDto):
     
     """Базовая единица измерения"""
     @property
-    def base_unit(self) -> Optional[str]:
-        return self.__base_unit
+    def base_unit_code(self) -> Optional[str]:
+        return self.__base_unit_code
     
-    @base_unit.setter
-    def base_unit(self, value: Optional[str]):
-        vld.is_str(value, "base unit name", could_be_none=True)
-        self.__base_unit = value
+    @base_unit_code.setter
+    def base_unit_code(self, value: Optional[str]):
+        vld.is_str(value, "base unit code", could_be_none=True)
+        self.__base_unit_code = value

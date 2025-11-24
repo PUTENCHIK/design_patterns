@@ -128,3 +128,16 @@ class SettingsManager:
         self.settings = SettingsModel()
         self.settings.company.name = "Default Name"
         self.settings.company.ownership = "owner"
+    
+    """Метод сохранения даты блокировки в файле настроек"""
+    def save_block_date(self):
+        with open(self.file_name, 'r', encoding='utf-8') as file:
+            content = json.load(file)
+            file.close()
+        
+        if content:
+            content["block_date"] = str(self.settings.block_date)
+            result = json.dumps(content, ensure_ascii=False, indent=4)
+            with open(self.file_name, 'w', encoding='utf-8') as file:
+                file.write(result)
+                file.close()

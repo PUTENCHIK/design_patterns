@@ -11,8 +11,12 @@ class ResponseHtmlTable(AbstractResponse):
     def __init__(self):
         super().__init__()
     
-    def build(self, data: List) -> str:
-        content = super().build(data, ResponseFormat.HTML_TABLE)
+    def build(
+        self,
+        data: List,
+        is_deep: bool = True,
+    ) -> str:
+        content = super().build(data, ResponseFormat.HTML_TABLE, is_deep)
 
         if len(data) == 0:
             return content

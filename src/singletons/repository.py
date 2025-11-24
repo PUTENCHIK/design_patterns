@@ -62,7 +62,7 @@ class Repository:
     
     """Метод получения объекта в памяти по имени"""
     def get_by_name(self, name: str) -> Optional[Any]:
-        vld.is_str(name, "item_name")
+        vld.is_str(name, "item_name", True)
         for key in self.keys():
             items: list = self.data[key].values()
             items = [item
@@ -75,7 +75,7 @@ class Repository:
 
     """Метод получения объекта в памяти по уникальному коду"""
     def get_by_unique_code(self, unique_code: str) -> Optional[Any]:
-        vld.is_str(unique_code, "item_unique_code")
+        vld.is_str(unique_code, "item_unique_code", True)
         for key in self.keys():
             items: dict = self.data[key]
             for item in items.values():

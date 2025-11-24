@@ -12,8 +12,12 @@ class ResponseJson(AbstractResponse):
     def __init__(self):
         super().__init__()
     
-    def build(self, data: List[Any]) -> str:
-        super().build(data, ResponseFormat.JSON)
+    def build(
+        self,
+        data: List[Any],
+        is_deep: bool = True,
+    ) -> str:
+        super().build(data, ResponseFormat.JSON, is_deep)
 
-        dict_ = FactoryConverters().convert(data)
+        dict_ = FactoryConverters().convert(data, is_deep=is_deep)
         return json.dumps(dict_, ensure_ascii=False)

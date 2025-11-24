@@ -1,0 +1,36 @@
+{
+    "remains": [
+        {
+            "measure_unit_code": "6b64453942de45b787d29b3e9a71e56c",
+            "name": "остаток #5c70eeba731e43048d535fa729443dab",
+            "nomenclature_code": "8b428f237ad84b74a80fe8d0957b2b19",
+            "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+            "unique_code": "5c70eeba731e43048d535fa729443dab",
+            "value": 12.0
+        },
+        {
+            "measure_unit_code": "6b64453942de45b787d29b3e9a71e56c",
+            "name": "остаток #b3aadb1cc48d4c18b5cc24c8cf2fc4c2",
+            "nomenclature_code": "c9a9e84f81f14257bcf475862755ec00",
+            "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+            "unique_code": "b3aadb1cc48d4c18b5cc24c8cf2fc4c2",
+            "value": 8.0
+        },
+        {
+            "measure_unit_code": "f613317c6ae241f2a562fd48a1861fee",
+            "name": "остаток #2bc7064bf98241d1b6072e88903f1c49",
+            "nomenclature_code": "952c4c0c250241e1acf62d369bdef8ab",
+            "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+            "unique_code": "2bc7064bf98241d1b6072e88903f1c49",
+            "value": 9800.0
+        },
+        {
+            "measure_unit_code": "e16671d41c244fd9bff39fa575d49bd1",
+            "name": "остаток #128f2527a1994213bd523a633488b6bb",
+            "nomenclature_code": "e4ffb8f9a6b140868a59c9fae7bc7472",
+            "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+            "unique_code": "128f2527a1994213bd523a633488b6bb",
+            "value": 2.5
+        }
+    ]
+}

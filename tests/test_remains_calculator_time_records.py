@@ -113,7 +113,7 @@ class TestRemainsCalculatorTimeRecords(unittest.TestCase):
         for block_date, block_datetime in zip(block_dates, block_datetimes):
             self.__settings_manager.settings.block_date = block_date
             time_start = time.time()
-            self.__start_service.save_nomenclature_remains()
+            self.__start_service.calc_remains()
             time_end = time.time()
 
             block_trans = prototype.clone([

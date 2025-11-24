@@ -41,7 +41,10 @@ class StorageModel(AbstractModel):
     """Фабричный метод из DTO"""
     @staticmethod
     def from_dto(dto: StorageDto, repo: Repository) -> Self:
-        return StorageModel(
+        model = StorageModel(
             name=dto.name,
             address=dto.address
         )
+        model.unique_code = dto.unique_code
+
+        return model

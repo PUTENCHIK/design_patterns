@@ -12,7 +12,12 @@ class AbstractResponse(ABC):
 
     """Сформировать нужный ответ"""
     @abstractmethod
-    def build(self, data: list, format: ResponseFormat) -> str:
+    def build(
+        self,
+        data: list,
+        format: ResponseFormat,
+        is_deep: bool = True,
+    ) -> str:
         vld.validate(format, ResponseFormat, "format")
         vld.is_list_of_same(data, "list of models", True)
 
