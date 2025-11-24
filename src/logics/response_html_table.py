@@ -3,7 +3,6 @@ from src.core.abstract_model import AbstractModel
 from src.core.response_format import ResponseFormat
 from src.core.abstract_response import AbstractResponse
 from src.utils import get_properties, is_primitive
-from src.logics.tbs_line import TbsLine
 
 
 """Класс для формирования ответа в формате HTML таблицы"""
@@ -12,8 +11,12 @@ class ResponseHtmlTable(AbstractResponse):
     def __init__(self):
         super().__init__()
     
-    def build(self, data: List[TbsLine]) -> str:
-        content = super().build(data, ResponseFormat.HTML_TABLE)
+    def build(
+        self,
+        data: List,
+        is_deep: bool = True,
+    ) -> str:
+        content = super().build(data, ResponseFormat.HTML_TABLE, is_deep)
 
         if len(data) == 0:
             return content

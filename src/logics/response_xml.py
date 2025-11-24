@@ -12,8 +12,12 @@ class ResponseXml(AbstractResponse):
     def __init__(self):
         super().__init__()
     
-    def build(self, data: List[Any]) -> str:
-        super().build(data, ResponseFormat.XML)
+    def build(
+        self,
+        data: List[Any],
+        is_deep: bool = True,
+    ) -> str:
+        super().build(data, ResponseFormat.XML, is_deep)
 
         xml_head = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
         json = obj_to_dict(data)

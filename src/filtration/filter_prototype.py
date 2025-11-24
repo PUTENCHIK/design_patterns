@@ -22,9 +22,6 @@ class FilterPrototype(BasePrototype):
     def __init__(self, data):
         super().__init__(data)
     
-    # def clone(self, data = None):
-    #     return super().clone(data)
-    
     def clone(
         self,
         data: Optional[List[FilterDto]] = None
@@ -37,11 +34,11 @@ class FilterPrototype(BasePrototype):
             flag = True
             for filter in data:
                 value = get_inner_value(model, filter.field)
-                if not is_primitive(value):
-                    raise ParamException(
-                        f"'{filter.field}' of {type(model).__name__} is "
-                        f"'{type(value).__name__}' not primitive"
-                    )
+                # if not is_primitive(value):
+                #     raise ParamException(
+                #         f"'{filter.field}' of {type(model).__name__} is "
+                #         f"'{type(value).__name__}' not primitive"
+                #     )
                 if not self.compare(value, filter):
                     flag = False
                     break

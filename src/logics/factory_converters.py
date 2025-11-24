@@ -26,16 +26,20 @@ class FactoryConverters:
         ParamException: для типа переданного объекта фабрика не может
             сформировать конвертер
     """ 
-    def create(self, object_: Any) -> AbstractConverter:
+    def create(
+        self,
+        object_: Any,
+        is_deep: bool = True
+    ) -> AbstractConverter:
         type_ = type(object_)
         if type_ in [bool, int, float, str] or object_ is None:
             return BasicConverter()
         elif type_ is datetime:
             return DatetimeConverter()
         elif isinstance(object_, AbstractModel):
-            return ReferenceConverter()
+            return ReferenceConverter(is_deep)
         elif type_ in [list, dict, tuple]:
-            return StructureConverter()
+            return StructureConverter(is_deep)
         else:
             raise ParamException(
                 f"Impossible to create converter from object "
@@ -46,5 +50,9 @@ class FactoryConverters:
     Метод-обёртка для получения конвертера из метода create() и вызова
     у него метода convert()
     """
-    def convert(self, object_: Any) -> Union[Dict, List]:
-        return self.create(object_).convert(object_)
+    def convert(
+        self,
+        object_: Any,
+        is_deep: bool = True
+    ) -> Union[Dict, List]:
+        return self.create(object_, is_deep).convert(object_)

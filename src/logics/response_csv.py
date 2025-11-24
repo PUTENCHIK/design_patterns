@@ -14,8 +14,12 @@ class ResponseCsv(AbstractResponse):
         super().__init__()
     
     """Сформировать CSV из списка моделей"""
-    def build(self, data: List[Any]) -> str:
-        text = super().build(data, ResponseFormat.CSV)
+    def build(
+        self,
+        data: List[Any],
+        is_deep: bool = True,
+    ) -> str:
+        text = super().build(data, ResponseFormat.CSV, is_deep)
 
         if len(data) == 0:
             return text

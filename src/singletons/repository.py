@@ -30,6 +30,9 @@ class Repository:
     # Ключ для транзакций
     transactions_key: str = "transactions"
 
+    # Ключ для остатков номенклатур закрытого периода
+    remains_key: str = "remains"
+
     def __new__(cls):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
@@ -51,11 +54,15 @@ class Repository:
         # Все ключи будут ссылаться на словари формата name: object
         # с соответствующими объектами
         for key in Repository.keys():
-            self.data[key] = dict()
+            self.clear(key)
+    
+    """Метод обнуления раздела репозитория с определёнными моделями"""
+    def clear(self, key: str):
+        self.data[key] = dict()
     
     """Метод получения объекта в памяти по имени"""
     def get_by_name(self, name: str) -> Optional[Any]:
-        vld.is_str(name, "item_name")
+        vld.is_str(name, "item_name", True)
         for key in self.keys():
             items: list = self.data[key].values()
             items = [item
@@ -68,7 +75,7 @@ class Repository:
 
     """Метод получения объекта в памяти по уникальному коду"""
     def get_by_unique_code(self, unique_code: str) -> Optional[Any]:
-        vld.is_str(unique_code, "item_unique_code")
+        vld.is_str(unique_code, "item_unique_code", True)
         for key in self.keys():
             items: dict = self.data[key]
             for item in items.values():

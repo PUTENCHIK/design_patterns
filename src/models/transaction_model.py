@@ -110,11 +110,11 @@ class TransactionModel(AbstractModel):
     """Универсальный фабричный метод"""
     @staticmethod
     def create(
-        datetime: Optional[dt_type] = None,
-        nomenclature: Optional[NomenclatureModel] = None,
-        storage: Optional[StorageModel] = None,
-        count: Optional[float] = None,
-        measure_unit: Optional[MeasureUnitModel] = None,
+        datetime: dt_type,
+        nomenclature: NomenclatureModel,
+        storage: StorageModel,
+        count: float,
+        measure_unit: MeasureUnitModel,
     ) -> Self:
         return TransactionModel(datetime, nomenclature, storage, count,
                                 measure_unit)
@@ -126,13 +126,16 @@ class TransactionModel(AbstractModel):
             dto.datetime,
             SettingsManager().settings.datetime_format
         )
-        nomenclature = repo.get(name=dto.nomenclature_name)
-        storage = repo.get(name=dto.storage_name)
-        unit = repo.get(name=dto.measure_unit_name)
-        return TransactionModel(
+        nomenclature = repo.get(unique_code=dto.nomenclature_code)
+        storage = repo.get(unique_code=dto.storage_code)
+        unit = repo.get(unique_code=dto.measure_unit_code)
+        model = TransactionModel(
             datetime=datetime,
             nomenclature=nomenclature,
             storage=storage,
             count=dto.count,
             measure_unit=unit
         )
+        model.unique_code = dto.unique_code
+
+        return model

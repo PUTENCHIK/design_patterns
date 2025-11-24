@@ -6,10 +6,10 @@ from src.core.abstract_dto import AbstractDto
 """DTO для модели NomenclatureModel"""
 class NomenclatureDto(AbstractDto):
     # Группа номенклатуры
-    __group: str = ""
+    __group_code: str = ""
 
     # Единица измерения
-    __measure_unit: str = ""
+    __measure_unit_code: str = ""
 
     def __init__(self):
         super().__init__()
@@ -19,20 +19,20 @@ class NomenclatureDto(AbstractDto):
     
     """Поле группы номенклатуры"""
     @property
-    def group(self) -> str:
-        return self.__group
+    def group_code(self) -> str:
+        return self.__group_code
     
-    @group.setter
-    def group(self, value: str):
-        vld.is_str(value, "group name")
-        self.__group = value
+    @group_code.setter
+    def group_code(self, value: str):
+        vld.is_str(value, "group code")
+        self.__group_code = value
     
     """Поле единицы измерения"""
     @property
-    def measure_unit(self) -> str:
-        return self.__measure_unit
+    def measure_unit_code(self) -> str:
+        return self.__measure_unit_code
     
-    @measure_unit.setter
-    def measure_unit(self, value: str):
-        vld.is_str(value, "measure unit name")
-        self.__measure_unit = value
+    @measure_unit_code.setter
+    def measure_unit_code(self, value: str):
+        vld.is_str(value, "measure unit code")
+        self.__measure_unit_code = value

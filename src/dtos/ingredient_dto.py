@@ -6,13 +6,13 @@ from src.core.abstract_dto import AbstractDto
 """DTO для модели IngredientModel"""
 class IngredientDto(AbstractDto):
     # Номенклатура
-    __nomenclature: str
+    __nomenclature_code: str = ""
 
     # Единица измерения
-    __measure_unit: str
+    __measure_unit_code: str = ""
 
     # Количество ингредиента
-    __count: int
+    __count: int = 0
 
     def __init__(self):
         super().__init__()
@@ -22,23 +22,23 @@ class IngredientDto(AbstractDto):
     
     """Поле номенклатуры"""
     @property
-    def nomenclature(self) -> str:
-        return self.__nomenclature
+    def nomenclature_code(self) -> str:
+        return self.__nomenclature_code
     
-    @nomenclature.setter
-    def nomenclature(self, value: str):
-        vld.is_str(value, "nomenclature")
-        self.__nomenclature = value
+    @nomenclature_code.setter
+    def nomenclature_code(self, value: str):
+        vld.is_str(value, "nomenclature code")
+        self.__nomenclature_code = value
     
     """Поле единицы измерения"""
     @property
-    def measure_unit(self) -> str:
-        return self.__measure_unit
+    def measure_unit_code(self) -> str:
+        return self.__measure_unit_code
     
-    @measure_unit.setter
-    def measure_unit(self, value: str):
-        vld.is_str(value, "measure_unit")
-        self.__measure_unit = value
+    @measure_unit_code.setter
+    def measure_unit_code(self, value: str):
+        vld.is_str(value, "measure unit code")
+        self.__measure_unit_code = value
     
     """Поле количества ингредиента"""
     @property

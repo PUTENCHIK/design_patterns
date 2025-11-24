@@ -1,185 +1,244 @@
 {
     "company": {},
     "models": {
-        "nomenclature_groups": [
-            {
-                "name": "ингредиенты"
-            }
-        ],
         "measure_units": [
             {
+                "base_unit": null,
+                "coefficient": 1.0,
                 "name": "литр",
-                "base_unit": null,
-                "coefficient": 1
+                "unique_code": "e16671d41c244fd9bff39fa575d49bd1"
             },
             {
+                "base_unit": null,
+                "coefficient": 1.0,
                 "name": "грамм",
-                "base_unit": null,
-                "coefficient": 1
+                "unique_code": "f613317c6ae241f2a562fd48a1861fee"
             },
             {
+                "base_unit": null,
+                "coefficient": 1.0,
                 "name": "штука",
-                "base_unit": null,
-                "coefficient": 1
+                "unique_code": "6b64453942de45b787d29b3e9a71e56c"
             },
             {
+                "base_unit_code": "f613317c6ae241f2a562fd48a1861fee",
+                "coefficient": 1000.0,
                 "name": "килограмм",
-                "base_unit": "грамм",
-                "coefficient": 1000
+                "unique_code": "8923443472734a439491c5f5c811a764"
             },
             {
+                "base_unit_code": "e16671d41c244fd9bff39fa575d49bd1",
+                "coefficient": 0.001,
                 "name": "миллилитр",
-                "base_unit": "литр",
-                "coefficient": 0.001
+                "unique_code": "319276ebf3d74fa5b94bfcca2963260f"
             }
         ],
-        "nomenlatures": [
+        "nomenclature_groups": [
             {
+                "name": "ингредиенты",
+                "unique_code": "997010b1312f4380b90d3473722ccc00"
+            }
+        ],
+        "nomenclatures": [
+            {
+                "group_code": "997010b1312f4380b90d3473722ccc00",
+                "measure_unit_code": "6b64453942de45b787d29b3e9a71e56c",
                 "name": "яйца",
-                "group": "ингредиенты",
-                "measure_unit": "штука"
+                "unique_code": "c9a9e84f81f14257bcf475862755ec00"
             },
             {
+                "group_code": "997010b1312f4380b90d3473722ccc00",
+                "measure_unit_code": "319276ebf3d74fa5b94bfcca2963260f",
                 "name": "подсолнечное масло",
-                "group": "ингредиенты",
-                "measure_unit": "миллилитр"
+                "unique_code": "1fc84caccd304746914101bc41768c2c"
             },
             {
+                "group_code": "997010b1312f4380b90d3473722ccc00",
+                "measure_unit_code": "319276ebf3d74fa5b94bfcca2963260f",
                 "name": "молоко",
-                "group": "ингредиенты",
-                "measure_unit": "миллилитр"
+                "unique_code": "e4ffb8f9a6b140868a59c9fae7bc7472"
             },
             {
+                "group_code": "997010b1312f4380b90d3473722ccc00",
+                "measure_unit_code": "6b64453942de45b787d29b3e9a71e56c",
                 "name": "сосиски",
-                "group": "ингредиенты",
-                "measure_unit": "штука"
+                "unique_code": "8b428f237ad84b74a80fe8d0957b2b19"
             },
             {
+                "group_code": "997010b1312f4380b90d3473722ccc00",
+                "measure_unit_code": "f613317c6ae241f2a562fd48a1861fee",
                 "name": "соль",
-                "group": "ингредиенты",
-                "measure_unit": "грамм"
+                "unique_code": "952c4c0c250241e1acf62d369bdef8ab"
             }
         ],
         "recipes": [
             {
-                "name": "Омлет",
-                "description": "Простой омлет с сосиской и 3 яйцами",
-                "portions": 1,
                 "cooking_time": 15,
+                "description": "Простой омлет с сосиской и 3 яйцами",
                 "ingredients": [
                     {
-                        "nomenclature": "яйца",
-                        "measure_unit": "штука",
-                        "count": 3
+                        "count": 3,
+                        "measure_unit_code": "6b64453942de45b787d29b3e9a71e56c",
+                        "nomenclature_code": "c9a9e84f81f14257bcf475862755ec00",
+                        "unique_code": "4b699a940d20414bba9b22f5ab559500"
                     },
                     {
-                        "nomenclature": "подсолнечное масло",
-                        "measure_unit": "миллилитр",
-                        "count": 10
+                        "count": 10,
+                        "measure_unit_code": "319276ebf3d74fa5b94bfcca2963260f",
+                        "nomenclature_code": "1fc84caccd304746914101bc41768c2c",
+                        "unique_code": "557088d26a3a4d12a21a42c338b55c05"
                     },
                     {
-                        "nomenclature": "молоко",
-                        "measure_unit": "миллилитр",
-                        "count": 200
+                        "count": 200,
+                        "measure_unit_code": "319276ebf3d74fa5b94bfcca2963260f",
+                        "nomenclature_code": "e4ffb8f9a6b140868a59c9fae7bc7472",
+                        "unique_code": "64b5ac016b304726898bcf310061c0fe"
                     },
                     {
-                        "nomenclature": "сосиски",
-                        "measure_unit": "штука",
-                        "count": 1
+                        "count": 1,
+                        "measure_unit_code": "6b64453942de45b787d29b3e9a71e56c",
+                        "nomenclature_code": "8b428f237ad84b74a80fe8d0957b2b19",
+                        "unique_code": "94af694547504f25b837391d218974c8"
                     },
                     {
-                        "nomenclature": "соль",
-                        "measure_unit": "грамм",
-                        "count": 5
+                        "count": 5,
+                        "measure_unit_code": "f613317c6ae241f2a562fd48a1861fee",
+                        "nomenclature_code": "952c4c0c250241e1acf62d369bdef8ab",
+                        "unique_code": "7c3174c68c9548c3a7aca17b6643329b"
                     }
                 ],
+                "name": "Омлет",
+                "portions": 1,
                 "steps": [
                     "Сварите сосиску",
                     "Параллельно варке подготовьте яйца",
                     "Пожарьте омлет"
-                ]
+                ],
+                "unique_code": "3ccf3300ca5b4f5ebd477dc52e01382a"
+            }
+        ],
+        "remains": [
+            {
+                "measure_unit_code": "6b64453942de45b787d29b3e9a71e56c",
+                "nomenclature_code": "8b428f237ad84b74a80fe8d0957b2b19",
+                "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+                "unique_code": "c50fcec4826148f2a8fbf32c11fc6ff5",
+                "value": 12.0
+            },
+            {
+                "measure_unit_code": "6b64453942de45b787d29b3e9a71e56c",
+                "nomenclature_code": "c9a9e84f81f14257bcf475862755ec00",
+                "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+                "unique_code": "7d0df9a822454325be85bdf23ec318f7",
+                "value": 8.0
+            },
+            {
+                "measure_unit_code": "f613317c6ae241f2a562fd48a1861fee",
+                "nomenclature_code": "952c4c0c250241e1acf62d369bdef8ab",
+                "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+                "unique_code": "b0a740c19e164c89925024ade64aec22",
+                "value": 9800.0
+            },
+            {
+                "measure_unit_code": "e16671d41c244fd9bff39fa575d49bd1",
+                "nomenclature_code": "e4ffb8f9a6b140868a59c9fae7bc7472",
+                "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+                "unique_code": "473ebe238f51418c9b8d2382b9833708",
+                "value": 2.5
             }
         ],
         "storages": [
             {
+                "address": "г. Иркутск, район Свердловский, ул. Первая, д. 2",
                 "name": "Главный склад",
-                "address": "г. Иркутск, район Свердловский, ул. Первая, д. 2"
+                "unique_code": "e5f4deeeffb54f4fb78070c84a9e5b48"
             },
             {
+                "address": "г. Иркутск, район Октябрьский, ул. Десятая, д. 1",
                 "name": "Второй склад",
-                "address": "г. Иркутск, район Октябрьский, ул. Десятая, д. 1"
-            }            
+                "unique_code": "92f601bd4c9846c3ac01786f7d1334c3"
+            }
         ],
         "transactions": [
             {
+                "count": 15.0,
                 "datetime": "2025-01-01 15:00:00",
-                "nomenclature_name": "сосиски",
-                "storage_name": "Главный склад",
-                "count": 15,
-                "measure_unit_name": "штука"
+                "measure_unit_code": "6b64453942de45b787d29b3e9a71e56c",
+                "nomenclature_code": "8b428f237ad84b74a80fe8d0957b2b19",
+                "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+                "unique_code": "e7cc4cc5847a4d1896d5dabd64583c1e"
             },
             {
+                "count": 8.0,
                 "datetime": "2025-01-01 15:00:00",
-                "nomenclature_name": "яйца",
-                "storage_name": "Главный склад",
-                "count": 8,
-                "measure_unit_name": "штука"
+                "measure_unit_code": "6b64453942de45b787d29b3e9a71e56c",
+                "nomenclature_code": "c9a9e84f81f14257bcf475862755ec00",
+                "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+                "unique_code": "9d8c21fbdcac44e38ea1788c35f1696f"
             },
             {
+                "count": 10.0,
                 "datetime": "2025-01-01 15:00:00",
-                "nomenclature_name": "соль",
-                "storage_name": "Главный склад",
-                "count": 10,
-                "measure_unit_name": "килограмм"
+                "measure_unit_code": "8923443472734a439491c5f5c811a764",
+                "nomenclature_code": "952c4c0c250241e1acf62d369bdef8ab",
+                "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+                "unique_code": "e15ceb7dadc94914b6bd8deacc7c0c52"
             },
             {
+                "count": 3.0,
                 "datetime": "2025-01-01 15:00:00",
-                "nomenclature_name": "молоко",
-                "storage_name": "Главный склад",
-                "count": 3,
-                "measure_unit_name": "литр"
+                "measure_unit_code": "e16671d41c244fd9bff39fa575d49bd1",
+                "nomenclature_code": "e4ffb8f9a6b140868a59c9fae7bc7472",
+                "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+                "unique_code": "6355862927ef44cda3ed36229e40db6a"
             },
             {
+                "count": -3.0,
                 "datetime": "2025-01-15 15:00:00",
-                "nomenclature_name": "сосиски",
-                "storage_name": "Главный склад",
-                "count": -3,
-                "measure_unit_name": "штука"
+                "measure_unit_code": "6b64453942de45b787d29b3e9a71e56c",
+                "nomenclature_code": "8b428f237ad84b74a80fe8d0957b2b19",
+                "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+                "unique_code": "181a009b81024c6f8c25b881703279b8"
             },
             {
+                "count": -2.0,
                 "datetime": "2025-01-18 15:00:00",
-                "nomenclature_name": "сосиски",
-                "storage_name": "Главный склад",
-                "count": -2,
-                "measure_unit_name": "штука"
+                "measure_unit_code": "6b64453942de45b787d29b3e9a71e56c",
+                "nomenclature_code": "8b428f237ad84b74a80fe8d0957b2b19",
+                "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+                "unique_code": "f594243f1cff4210b64ede4c96fd931d"
             },
             {
+                "count": -500.0,
                 "datetime": "2025-01-03 15:00:00",
-                "nomenclature_name": "молоко",
-                "storage_name": "Главный склад",
-                "count": -500,
-                "measure_unit_name": "миллилитр"
+                "measure_unit_code": "319276ebf3d74fa5b94bfcca2963260f",
+                "nomenclature_code": "e4ffb8f9a6b140868a59c9fae7bc7472",
+                "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+                "unique_code": "427e731dc97940ee8807fecd6f73d287"
             },
             {
+                "count": -200.0,
                 "datetime": "2025-01-14 15:00:00",
-                "nomenclature_name": "соль",
-                "storage_name": "Главный склад",
-                "count": -200,
-                "measure_unit_name": "грамм"
+                "measure_unit_code": "f613317c6ae241f2a562fd48a1861fee",
+                "nomenclature_code": "952c4c0c250241e1acf62d369bdef8ab",
+                "storage_code": "e5f4deeeffb54f4fb78070c84a9e5b48",
+                "unique_code": "eff421fffd274e37bc132757718c2d01"
             },
             {
+                "count": 1.0,
                 "datetime": "2025-02-01 15:00:00",
-                "nomenclature_name": "подсолнечное масло",
-                "storage_name": "Второй склад",
-                "count": 1,
-                "measure_unit_name": "литр"
+                "measure_unit_code": "e16671d41c244fd9bff39fa575d49bd1",
+                "nomenclature_code": "1fc84caccd304746914101bc41768c2c",
+                "storage_code": "92f601bd4c9846c3ac01786f7d1334c3",
+                "unique_code": "ac174d3cc1ca4d32ae002822135b614f"
             },
             {
+                "count": -1500.0,
                 "datetime": "2025-02-02 15:00:00",
-                "nomenclature_name": "подсолнечное масло",
-                "storage_name": "Второй склад",
-                "count": -1500,
-                "measure_unit_name": "миллилитр"
+                "measure_unit_code": "319276ebf3d74fa5b94bfcca2963260f",
+                "nomenclature_code": "1fc84caccd304746914101bc41768c2c",
+                "storage_code": "92f601bd4c9846c3ac01786f7d1334c3",
+                "unique_code": "dff5dc8aa45e4492982c7de3cce4fb86"
             }
         ]
     }

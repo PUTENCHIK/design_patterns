@@ -7,13 +7,13 @@ from src.dtos.ingredient_dto import IngredientDto
 """DTO для модели IngredientModel"""
 class RecipeDto(AbstractDto):
     # Описание рецепта (255, опционально)
-    __description: Optional[str]
+    __description: Optional[str] = None
 
     # Количество порций, на которое расчитан рецепт
-    __portions: Optional[int]
+    __portions: Optional[int] = None
 
     # Время приготовления (в минутах)
-    __cooking_time: Optional[int]
+    __cooking_time: Optional[int] = None
 
     # Список ингредиентов блюда
     __ingredients: Union[List[dict], List[IngredientDto]] = list()

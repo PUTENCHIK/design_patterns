@@ -170,3 +170,4 @@ cython_debug/
 
 .vscode
 tests/responses_results
+tests/remains_time_record

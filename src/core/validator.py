@@ -42,7 +42,7 @@ class Validator:
         strictly_len: bool = False,
     ) -> bool:
 
-        if could_be_none and value is None:
+        if could_be_none and (value is None or len(str(value).strip()) == 0):
             return True
         elif (not could_be_none and value is None or
               not len(str(value).strip())):
@@ -244,7 +244,7 @@ class Validator:
     @staticmethod
     def is_file_exists(
         file_name: str
-    ) -> str:
+    ) -> pathlib.Path:
         if not isinstance(file_name, str):
             raise WrongTypeException(
                 f"File name '{file_name}' must be string"
@@ -257,7 +257,7 @@ class Validator:
         if not pathlib.Path(file_name).exists():
             raise FileNotFoundError(f"No such file: {file_name}")
         
-        return str(pathlib.Path(file_name).absolute())
+        return pathlib.Path(file_name).absolute()
     
     """Метод проверки на то, что класс является суперклассом для объекта
     

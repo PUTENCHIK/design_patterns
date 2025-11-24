@@ -10,9 +10,10 @@ class TestStartService(unittest.TestCase):
     # Объект сервиса
     __start_service: StartService = StartService()
 
-    def __init__(self, methodName = "runTest"):
-        super().__init__(methodName)
+    def setUp(self):
         self.__start_service.start(self.__file_name)
+
+        return super().setUp()
     
     # При вызове конструктора StartService возвращается тот же экземпляр класса
     def test_startservice_new_start_service_is_singlton_returns_true(self):
@@ -40,7 +41,6 @@ class TestStartService(unittest.TestCase):
     # Повторный вызов метода start() не должен обновлять единицы измерения
     def test_startservice_start_run_method_again_measure_units_are_same(self):
         # Подготовка
-        # self.__start_service.start(self.__file_name, "TestStartService.test1.1")
         name1, name2 = "грамм", "килограмм"
         gramm1 = self.__start_service.repository.get_by_name(name1)
         kilo1 = self.__start_service.repository.get_by_name(name2)

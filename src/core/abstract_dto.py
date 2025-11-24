@@ -2,16 +2,16 @@ from abc import ABC, abstractmethod
 from typing import Self
 from src.core.validator import Validator as vld
 from src.core.exceptions import OperationException
-from src.utils import get_fields
+from src.utils import get_properties
 
 
 """Абстракция объекта для передачи данных (DTO)"""
 class AbstractDto(ABC):
     # Уникальный код DTO
-    __unique_code: str
+    __unique_code: str = "-"
 
     # Наименование DTO
-    __name: str
+    __name: str = "-"
 
     @abstractmethod
     def __init__(self):
@@ -41,7 +41,7 @@ class AbstractDto(ABC):
     @abstractmethod
     def load(self, data: dict) -> Self:
         vld.is_dict(data, "data")
-        fields = get_fields(self)
+        fields = get_properties(self)
         marching_keys = [key for key in data if key in fields]
 
         try:
