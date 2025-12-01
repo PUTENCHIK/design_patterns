@@ -113,6 +113,7 @@ class RecipeModel(AbstractModel):
             ingredients=ingredients,
             steps=dto.steps
         )
-        model.unique_code = dto.unique_code
+        if dto.unique_code is not None:
+            model.unique_code = dto.unique_code
 
         return model

@@ -88,6 +88,7 @@ class IngredientModel(AbstractModel):
             measure_unit=measure_unit,
             count=dto.count,
         )
-        model.unique_code = dto.unique_code
+        if dto.unique_code is not None:
+            model.unique_code = dto.unique_code
 
         return model

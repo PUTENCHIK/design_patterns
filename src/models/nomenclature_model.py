@@ -81,6 +81,7 @@ class NomenclatureModel(AbstractModel):
             group=group,
             unit=unit,
         )
-        model.unique_code = dto.unique_code
+        if dto.unique_code is not None:
+            model.unique_code = dto.unique_code
 
         return model

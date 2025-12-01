@@ -21,5 +21,6 @@ class NomenclatureGroupModel(AbstractModel):
     @staticmethod
     def from_dto(dto: NomenclatureGroupDto, repo: Repository) -> Self:
         model = NomenclatureGroupModel(name=dto.name)
-        model.unique_code = dto.unique_code
+        if dto.unique_code is not None:
+            model.unique_code = dto.unique_code
         return model

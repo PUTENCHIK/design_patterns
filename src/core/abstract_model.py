@@ -2,7 +2,8 @@ import uuid
 from abc import ABC, abstractmethod
 from typing import Union, Self
 from src.core.validator import Validator as vld
-from src.core.exceptions import WrongTypeException
+from src.core.event_type import EventType
+from src.core.exceptions import WrongTypeException, OperationException
 
 
 """Абстрактная модель с полем уникального кода для однозначной
@@ -46,6 +47,8 @@ class AbstractModel(ABC):
             return self.unique_code == other
         elif isinstance(other, AbstractModel):
             return self.unique_code == other.unique_code
+        elif other is None:
+            return False
         else:
             raise WrongTypeException(
                 f"Imposible compare with '{type(other)}'"
