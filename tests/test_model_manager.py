@@ -1,5 +1,7 @@
 import unittest
+from src.core.exceptions import OperationException
 from src.dtos.nomenclature_group_dto import NomenclatureGroupDto
+from src.models.measure_unit_model import MeasureUnitModel
 from src.models.nomenclature_group_model import NomenclatureGroupModel
 from src.singletons.repository import Repository
 from src.singletons.model_manager import ModelManager
@@ -57,6 +59,18 @@ class TestModelManager(unittest.TestCase):
         # Проверка
         assert result
         assert Repository().get_by_unique_code(code) is None
+    
+    def test_modelmanager_deletemodel_delete_base_unit_raises_exception(self):
+        # Подготовка
+        model = Repository().get_by_name("грамм")
+        code = model.unique_code
+        # Действие и проверка
+        with self.assertRaises(OperationException):
+            ModelManager.delete_model(
+                code,
+                MeasureUnitModel,
+            )
+
 
 
 if __name__ == "__main__":

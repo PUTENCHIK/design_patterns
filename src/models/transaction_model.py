@@ -1,6 +1,9 @@
 from typing import Optional, Self, Union
 from datetime import datetime as dt_type
 from src.core.validator import Validator as vld
+from src.core.event_type import EventType
+from src.core.exceptions import OperationException
+from src.core.event_params import AbstractEventParams, DeleteModelEventParams
 from src.core.abstract_model import AbstractModel
 from src.dtos.transaction_dto import TransactionDto
 from src.models.storage_model import StorageModel
@@ -140,3 +143,29 @@ class TransactionModel(AbstractModel):
             model.unique_code = dto.unique_code
 
         return model
+    
+    """Обработка событий моделей транзакций"""
+    def handle(self, event: EventType, params: AbstractEventParams):
+        super().handle(event, params)
+        if event == EventType.DELETE_MODEL:
+            vld.validate(params, DeleteModelEventParams, "params")
+            params: DeleteModelEventParams = params
+            # Если удаляется склад транзакции
+            if self.storage == params.unique_code:
+                raise OperationException(
+                    f"Impossible to delete storage '{self.storage}' "
+                    f"because it's storage of transaction '{self}'"
+                )
+            # Если удаляется единица измерения транзакции
+            elif self.measure_unit == params.unique_code:
+                raise OperationException(
+                    f"Impossible to delete measure unit '{self.measure_unit}' "
+                    f"because it's unit of transaction '{self}'"
+                )
+            # Если удаляется номенклатура транзакции
+            elif self.nomenclature == params.unique_code:
+                raise OperationException(
+                    f"Impossible to delete nomenclature "
+                    f"'{self.nomenclature}' because it's nomenclature of "
+                    f"transaction '{self}'"
+                )

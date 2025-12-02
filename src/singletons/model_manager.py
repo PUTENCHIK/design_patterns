@@ -1,10 +1,13 @@
 from typing import Optional
 from src.core.validator import Validator as vld
+from src.core.event_type import EventType
+from src.core.event_params import DeleteModelEventParams
 from src.core.exceptions import ParamException, OperationException
 from src.core.abstract_dto import AbstractDto
 from src.core.abstract_model import AbstractModel
-from src.singletons.start_service import StartService
 from src.singletons.repository import Repository
+from src.singletons.start_service import StartService
+from src.singletons.observe_service import ObserveService
 from src.utils import get_properties
 
 
@@ -67,6 +70,7 @@ class ModelManager:
 
         for key in Repository.keys():
             if unique_code in StartService().repository.data[key]:
+                ObserveService().delete_model_event(unique_code)
                 StartService().repository.data[key].pop(unique_code)
         
         return True

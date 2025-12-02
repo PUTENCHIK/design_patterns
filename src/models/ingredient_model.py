@@ -1,5 +1,8 @@
 from typing import Optional, Self
 from src.core.validator import Validator as vld
+from src.core.event_type import EventType
+from src.core.exceptions import OperationException
+from src.core.event_params import AbstractEventParams, DeleteModelEventParams
 from src.core.abstract_model import AbstractModel
 from src.dtos.ingredient_dto import IngredientDto
 from src.models.nomenclature_model import NomenclatureModel
@@ -92,3 +95,25 @@ class IngredientModel(AbstractModel):
             model.unique_code = dto.unique_code
 
         return model
+    
+    """Обработка событий моделей ингредиентов"""
+    def handle(self, event: EventType, params: AbstractEventParams):
+        super().handle(event, params)
+        if event == EventType.DELETE_MODEL:
+            vld.validate(params, DeleteModelEventParams, "params")
+            params: DeleteModelEventParams = params
+            # Если удаляется единица измерения ингредиента
+            if self.measure_unit is not None and \
+                    self.measure_unit == params.unique_code:
+                raise OperationException(
+                    f"Impossible to delete measure unit '{self.measure_unit}' "
+                    f"because it's unit of ingredient '{self}'"
+                )
+            # Если удаляется номенклатура ингредиента
+            elif self.nomenclature is not None and \
+                    self.nomenclature == params.unique_code:
+                raise OperationException(
+                    f"Impossible to delete nomenclature "
+                    f"'{self.nomenclature}' because it's nomenclature of "
+                    f"ingredient '{self}'"
+                )
