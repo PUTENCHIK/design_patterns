@@ -8,10 +8,10 @@ from src.utils import get_properties
 """Абстракция объекта для передачи данных (DTO)"""
 class AbstractDto(ABC):
     # Уникальный код DTO
-    __unique_code: str = "-"
+    __unique_code: str = None
 
     # Наименование DTO
-    __name: str = "-"
+    __name: str = None
 
     @abstractmethod
     def __init__(self):

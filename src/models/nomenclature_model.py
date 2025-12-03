@@ -1,5 +1,8 @@
 from typing import Optional, Self
 from src.core.validator import Validator as vld
+from src.core.event_type import EventType
+from src.core.exceptions import OperationException
+from src.core.event_params import AbstractEventParams, DeleteModelEventParams
 from src.core.abstract_model import AbstractModel
 from src.dtos.nomenclature_dto import NomenclatureDto
 from src.models.measure_unit_model import MeasureUnitModel
@@ -81,6 +84,28 @@ class NomenclatureModel(AbstractModel):
             group=group,
             unit=unit,
         )
-        model.unique_code = dto.unique_code
+        if dto.unique_code is not None:
+            model.unique_code = dto.unique_code
 
         return model
+
+    """Обработка событий моделей номенклатуры"""
+    def handle(self, event: EventType, params: AbstractEventParams):
+        super().handle(event, params)
+        if event == EventType.DELETE_MODEL:
+            vld.validate(params, DeleteModelEventParams, "params")
+            params: DeleteModelEventParams = params
+            # Если удаляется единица измерения номенклатуры
+            if self.measure_unit is not None and \
+                    self.measure_unit == params.unique_code:
+                raise OperationException(
+                    f"Impossible to delete measure unit '{self.measure_unit}' "
+                    f"because it's unit of nomenclature '{self}'"
+                )
+            # Если удаляется группа номенклатуры
+            elif self.group is not None and \
+                    self.group == params.unique_code:
+                raise OperationException(
+                    f"Impossible to delete nomenclature group '{self.group}' "
+                    f"because it's group of nomenclature '{self}'"
+                )

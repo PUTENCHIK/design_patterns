@@ -1,21 +1,32 @@
 import uvicorn
 from typing import List, Optional
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.responses import HTMLResponse
 from datetime import date
 from contextlib import asynccontextmanager
 
-from src.core.schemes import FilterScheme
+from src.core.schemes import (FilterScheme, NomenclatureGroupScheme,
+                              NomenclatureScheme, MeasureUnitScheme,
+                              StorageScheme)
 from src.core.response_format import ResponseFormat
 from src.core.http_responses import (TextResponse, JsonResponse, ErrorResponse,
                                      FormatResponse, JsonFileResponse)
 
 from src.dtos.filter_dto import FilterDto
+from src.dtos.nomenclature_group_dto import NomenclatureGroupDto
+from src.dtos.nomenclature_dto import NomenclatureDto
+from src.dtos.measure_unit_dto import MeasureUnitDto
+from src.dtos.storage_dto import StorageDto
 
 from src.logics.tbs_calculator import TbsCalculator
 from src.logics.factory_entities import FactoryEntities
 from src.logics.factory_converters import FactoryConverters
 from src.logics.remains_calculator import RemainsCalculator
+
+from src.models.nomenclature_group_model import NomenclatureGroupModel
+from src.models.nomenclature_model import NomenclatureModel
+from src.models.measure_unit_model import MeasureUnitModel
+from src.models.storage_model import StorageModel
 
 from src.filtration.filter_operator import FilterOperator as op
 from src.filtration.filter_prototype import FilterPrototype
@@ -23,6 +34,7 @@ from src.filtration.filter_prototype import FilterPrototype
 from src.singletons.repository import Repository
 from src.singletons.start_service import StartService
 from src.singletons.settings_manager import SettingsManager
+from src.singletons.model_manager import ModelManager
 
 
 settings_file = "data/settings.json"
@@ -43,6 +55,22 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+groups_router = APIRouter(
+    prefix="/api/nomenclature_groups",
+    tags=["nomenclature_groups"]
+)
+nomenclatures_router = APIRouter(
+    prefix="/api/nomenclatures",
+    tags=["nomenclatures"]
+)
+units_router = APIRouter(
+    prefix="/api/measure_units",
+    tags=["measure_units"]
+)
+storages_router = APIRouter(
+    prefix="/api/storages",
+    tags=["storages"]
+)
 
 
 @app.get("/api/status")
@@ -263,6 +291,255 @@ def get_remains_on_date(date_: date):
         factory_entities.create(ResponseFormat.HTML_TABLE).build(remains)
     )
 
+
+@groups_router.get("/")
+def get_nomenclature_group(unique_code: str):
+    """
+    Получение группы номенклатуры по уникальному коду
+    """
+    groups = list(start_service.nomenclature_groups.values())
+    group = FilterPrototype(groups).clone([
+        FilterDto("unique_code", op.EQUAL, unique_code)
+    ]).data
+    group = group[0] if len(group) > 0 else None
+    
+    return JsonResponse(factory_converters.convert(group))
+
+
+@groups_router.post("/")
+def add_nomenclature_group(dto: NomenclatureGroupScheme):
+    """
+    Добавление новой группы номенклатуры
+    """
+    try:
+        model = ModelManager.add_model(
+            repo_key=Repository.nomenclature_group_key,
+            model_type=NomenclatureGroupModel,
+            dto=NomenclatureGroupDto().load(dto.model_dump())
+        )
+        return JsonResponse(factory_converters.convert(model))
+    except Exception as e:
+        return ErrorResponse(e)
+
+
+@groups_router.put("/")
+def edit_nomenclature_group(unique_code: str, dto: NomenclatureGroupScheme):
+    """
+    Изменение группы номенклатуры
+    """
+    try:
+        model = ModelManager.edit_model(
+            unique_code=unique_code,
+            model_type=NomenclatureGroupModel,
+            dto=NomenclatureGroupDto().load(dto.model_dump())
+        )
+        return JsonResponse(factory_converters.convert(model))
+    except Exception as e:
+        return ErrorResponse(e)
+
+
+@groups_router.delete("/")
+def delete_nomenclature_group(unique_code: str):
+    """
+    Удаление группы номенклатуры
+    """
+    try:
+        result = ModelManager.delete_model(
+            unique_code=unique_code,
+            model_type=NomenclatureGroupModel
+        )
+        return JsonResponse({"result": result})
+    except Exception as e:
+        return ErrorResponse(e)
+
+
+@nomenclatures_router.get("/")
+def get_nomenclature(unique_code: str):
+    """
+    Получение номенклатуры по уникальному коду
+    """
+    nomenclatures = list(start_service.nomenclatures.values())
+    nomenclature = FilterPrototype(nomenclatures).clone([
+        FilterDto("unique_code", op.EQUAL, unique_code)
+    ]).data
+    nomenclature = nomenclature[0] if len(nomenclature) > 0 else None
+    
+    return JsonResponse(factory_converters.convert(nomenclature))
+
+
+@nomenclatures_router.post("/")
+def add_nomenclature(dto: NomenclatureScheme):
+    """
+    Добавление новой номенклатуры
+    """
+    try:
+        model = ModelManager.add_model(
+            repo_key=Repository.nomenclatures_key,
+            model_type=NomenclatureModel,
+            dto=NomenclatureDto().load(dto.model_dump())
+        )
+        return JsonResponse(factory_converters.convert(model))
+    except Exception as e:
+        return ErrorResponse(e)
+
+
+@nomenclatures_router.put("/")
+def edit_nomenclature(unique_code: str, dto: NomenclatureScheme):
+    """
+    Изменение номенклатуры
+    """
+    try:
+        model = ModelManager.edit_model(
+            unique_code=unique_code,
+            model_type=NomenclatureModel,
+            dto=NomenclatureDto().load(dto.model_dump(exclude_none=True))
+        )
+        return JsonResponse(factory_converters.convert(model))
+    except Exception as e:
+        return ErrorResponse(e)
+
+
+@nomenclatures_router.delete("/")
+def delete_nomenclature(unique_code: str):
+    """
+    Удаление номенклатуры
+    """
+    try:
+        result = ModelManager.delete_model(
+            unique_code=unique_code,
+            model_type=NomenclatureModel
+        )
+        return JsonResponse({"result": result})
+    except Exception as e:
+        return ErrorResponse(e)
+
+
+@units_router.get("/")
+def get_measure_unit(unique_code: str):
+    """
+    Получение единицы измерения по уникальному коду
+    """
+    units = list(start_service.measure_units.values())
+    unit = FilterPrototype(units).clone([
+        FilterDto("unique_code", op.EQUAL, unique_code)
+    ]).data
+    unit = unit[0] if len(unit) > 0 else None
+    
+    return JsonResponse(factory_converters.convert(unit))
+
+
+@units_router.post("/")
+def add_measure_unit(dto: MeasureUnitScheme):
+    """
+    Добавление новой единицы измерения
+    """
+    try:
+        model = ModelManager.add_model(
+            repo_key=Repository.measure_unit_key,
+            model_type=MeasureUnitModel,
+            dto=MeasureUnitDto().load(dto.model_dump())
+        )
+        return JsonResponse(factory_converters.convert(model))
+    except Exception as e:
+        return ErrorResponse(e)
+
+
+@units_router.put("/")
+def edit_measure_unit(unique_code: str, dto: MeasureUnitScheme):
+    """
+    Изменение единицы измерения
+    """
+    try:
+        model = ModelManager.edit_model(
+            unique_code=unique_code,
+            model_type=MeasureUnitModel,
+            dto=MeasureUnitDto().load(dto.model_dump(exclude_none=True))
+        )
+        return JsonResponse(factory_converters.convert(model))
+    except Exception as e:
+        return ErrorResponse(e)
+
+
+@units_router.delete("/")
+def delete_measure_unit(unique_code: str):
+    """
+    Удаление единицы измерения
+    """
+    try:
+        result = ModelManager.delete_model(
+            unique_code=unique_code,
+            model_type=MeasureUnitModel
+        )
+        return JsonResponse({"result": result})
+    except Exception as e:
+        return ErrorResponse(e)
+
+
+@storages_router.get("/")
+def get_storage(unique_code: str):
+    """
+    Получение склада по уникальному коду
+    """
+    storages = list(start_service.storages.values())
+    storage = FilterPrototype(storages).clone([
+        FilterDto("unique_code", op.EQUAL, unique_code)
+    ]).data
+    storage = storage[0] if len(storage) > 0 else None
+    
+    return JsonResponse(factory_converters.convert(storage))
+
+
+@storages_router.post("/")
+def add_storage(dto: StorageScheme):
+    """
+    Добавление нового склада
+    """
+    try:
+        model = ModelManager.add_model(
+            repo_key=Repository.storages_key,
+            model_type=StorageModel,
+            dto=StorageDto().load(dto.model_dump())
+        )
+        return JsonResponse(factory_converters.convert(model))
+    except Exception as e:
+        return ErrorResponse(e)
+
+
+@storages_router.put("/")
+def edit_storage(unique_code: str, dto: StorageScheme):
+    """
+    Изменение склада
+    """
+    try:
+        model = ModelManager.edit_model(
+            unique_code=unique_code,
+            model_type=StorageModel,
+            dto=StorageDto().load(dto.model_dump(exclude_none=True))
+        )
+        return JsonResponse(factory_converters.convert(model))
+    except Exception as e:
+        return ErrorResponse(e)
+
+
+@storages_router.delete("/")
+def delete_storage(unique_code: str):
+    """
+    Удаление склада
+    """
+    try:
+        result = ModelManager.delete_model(
+            unique_code=unique_code,
+            model_type=StorageModel
+        )
+        return JsonResponse({"result": result})
+    except Exception as e:
+        return ErrorResponse(e)
+
+
+app.include_router(groups_router)
+app.include_router(nomenclatures_router)
+app.include_router(units_router)
+app.include_router(storages_router)
 
 if __name__ == "__main__":
     uvicorn.run(app=app,
