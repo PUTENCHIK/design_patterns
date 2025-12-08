@@ -1,7 +1,5 @@
 from typing import Optional
 from src.core.validator import Validator as vld
-from src.core.event_type import EventType
-from src.core.event_params import DeleteModelEventParams
 from src.core.exceptions import ParamException, OperationException
 from src.core.abstract_dto import AbstractDto
 from src.core.abstract_model import AbstractModel
@@ -27,7 +25,9 @@ class ModelManager:
             raise ParamException(
                 f"No such key in repository: {repo_key}"
             )
+        ObserveService().try_add_model_event(model)
         StartService().repository.data[repo_key][model.unique_code] = model
+        ObserveService().model_added_event(model)
 
         return model
     
@@ -51,7 +51,13 @@ class ModelManager:
                 continue
             edited_value = getattr(edited_model, prop)
             if getattr(model, prop) != edited_value:
+                ObserveService().try_edit_model_field_event(model,
+                                                            prop,
+                                                            edited_value)
                 setattr(model, prop, edited_value)
+                ObserveService().model_field_edited_event(model,
+                                                          prop,
+                                                          edited_value)
         
         return model
     
@@ -70,7 +76,8 @@ class ModelManager:
 
         for key in Repository.keys():
             if unique_code in StartService().repository.data[key]:
-                ObserveService().delete_model_event(unique_code)
+                ObserveService().try_delete_model_event(unique_code)
                 StartService().repository.data[key].pop(unique_code)
+                ObserveService().model_deleted_event(unique_code)
         
         return True

@@ -1,6 +1,7 @@
+import time
 import uvicorn
 from typing import List, Optional
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Request
 from fastapi.responses import HTMLResponse
 from datetime import date
 from contextlib import asynccontextmanager
@@ -28,15 +29,19 @@ from src.models.nomenclature_model import NomenclatureModel
 from src.models.measure_unit_model import MeasureUnitModel
 from src.models.storage_model import StorageModel
 
+from src.logging.logger import Logger
+
 from src.filtration.filter_operator import FilterOperator as op
 from src.filtration.filter_prototype import FilterPrototype
 
 from src.singletons.repository import Repository
-from src.singletons.start_service import StartService
-from src.singletons.settings_manager import SettingsManager
 from src.singletons.model_manager import ModelManager
+from src.singletons.start_service import StartService
+from src.singletons.observe_service import ObserveService
+from src.singletons.settings_manager import SettingsManager
 
 
+logger = Logger()
 settings_file = "data/settings.json"
 remains_file = "data/remains.json"
 start_service = StartService()
@@ -73,10 +78,31 @@ storages_router = APIRouter(
 )
 
 
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    ObserveService().web_route_called_event(request)
+
+    start_time = time.time()
+    response = await call_next(request)
+    time_processed = time.time() - start_time
+
+    ObserveService().web_route_answered_event(
+        request, response, time_processed
+    )
+    return response
+
+
 @app.get("/api/status")
 def status():
     """Проверить доступность REST API"""
     return TextResponse("success")
+
+
+@app.get("/api/settings")
+def get_app_settings():
+    """Получить настройки приложения"""
+    result = FactoryConverters().convert(settings_manager.settings)
+    return JsonResponse(result)
 
 
 @app.get("/api/responses/formats")

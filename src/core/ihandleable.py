@@ -1,6 +1,6 @@
+from pydantic import BaseModel
 from src.core.validator import Validator as vld
 from src.core.event_type import EventType
-from src.core.event_params import AbstractEventParams
 
 
 """
@@ -9,6 +9,6 @@ from src.core.event_params import AbstractEventParams
 class IHandleable:
     
     # Метод для обработки событий
-    def handle(self, event: EventType, params: AbstractEventParams):
+    def handle(self, event: EventType, params: BaseModel):
         vld.validate(event, EventType, "event")
-        vld.validate(params, AbstractEventParams, "params")
+        vld.validate(params, BaseModel, "params")

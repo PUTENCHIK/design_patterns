@@ -1,28 +1,48 @@
-from abc import ABC, abstractmethod
-from src.core.validator import Validator as vld
+from typing import Any
+from fastapi import Request, Response
+from pydantic import BaseModel
 
 
-class AbstractEventParams(ABC):
-
-    @abstractmethod
-    def __init__(self):
-        super().__init__()
-
-
-class DeleteModelEventParams(AbstractEventParams):
-
+class ModelBaseParams(BaseModel):
     # Уникальный код удаляемой модели
-    __unique_code: str
+    unique_code: str
 
-    def __init__(self, unique_code: str):
-        super().__init__()
-        self.unique_code = unique_code
-    
-    @property
-    def unique_code(self) -> str:
-        return self.__unique_code
-    
-    @unique_code.setter
-    def unique_code(self, value: str):
-        vld.is_str(value, "unique_code")
-        self.__unique_code = value
+
+class BlockModelDeleting(ModelBaseParams):
+    # Код модели, заблокировавшей удаление
+    blocked_code: str
+
+
+class ModelAddParams(ModelBaseParams):
+    # Тип модели
+    model_type: str
+
+
+class ModelEditFieldParams(ModelAddParams):
+    # Изменяемое поле
+    field: str
+    # Новое значение
+    value: Any
+
+
+class SettingsFieldParams(BaseModel):
+    # Изменяемое поле настроек
+    field: str
+    # Новое значение
+    value: Any
+
+
+class WebRequestCalledParams(BaseModel):
+    # Метод запроса
+    method: str
+    # Маршрут запроса
+    route: str
+    # Тело запроса
+    request_body: dict
+
+
+class WebRequestAnsweredParams(WebRequestCalledParams):
+    # Статус ответа
+    status_code: int
+    # Время, потраченное на формирование ответа
+    time: float

@@ -1,9 +1,8 @@
 import uuid
 from abc import ABC, abstractmethod
-from typing import Union, Self
+from typing import Union, Self, Any
 from src.core.validator import Validator as vld
 from src.core.ihandleable import IHandleable
-from src.core.exceptions import WrongTypeException
 from src.singletons.observe_service import ObserveService
 
 
@@ -44,7 +43,7 @@ class AbstractModel(ABC, IHandleable):
         self.__name = value.strip()
     
     """Перегрузка оператора сравнения"""
-    def __eq__(self, other: Union[str, Self]) -> bool:
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, str):
             return self.unique_code == other
         elif isinstance(other, AbstractModel):
@@ -52,9 +51,7 @@ class AbstractModel(ABC, IHandleable):
         elif other is None:
             return False
         else:
-            raise WrongTypeException(
-                f"Imposible compare with '{type(other)}'"
-            )
+            return super().__eq__(other)
     
     """Перегрузка оператора неравества"""
     def __ne__(self, other: Union[str, Self]) -> bool:

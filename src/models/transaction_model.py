@@ -1,9 +1,10 @@
 from typing import Optional, Self, Union
 from datetime import datetime as dt_type
+from pydantic import BaseModel
 from src.core.validator import Validator as vld
 from src.core.event_type import EventType
 from src.core.exceptions import OperationException
-from src.core.event_params import AbstractEventParams, DeleteModelEventParams
+from src.core.event_params import ModelBaseParams
 from src.core.abstract_model import AbstractModel
 from src.dtos.transaction_dto import TransactionDto
 from src.models.storage_model import StorageModel
@@ -11,6 +12,7 @@ from src.models.measure_unit_model import MeasureUnitModel
 from src.models.nomenclature_model import NomenclatureModel
 from src.singletons.repository import Repository
 from src.singletons.settings_manager import SettingsManager
+from src.singletons.observe_service import ObserveService
 
 
 """Модель транзакции"""
@@ -145,27 +147,40 @@ class TransactionModel(AbstractModel):
         return model
     
     """Обработка событий моделей транзакций"""
-    def handle(self, event: EventType, params: AbstractEventParams):
+    def handle(self, event: EventType, params: BaseModel):
         super().handle(event, params)
-        if event == EventType.DELETE_MODEL:
-            vld.validate(params, DeleteModelEventParams, "params")
-            params: DeleteModelEventParams = params
-            # Если удаляется склад транзакции
-            if self.storage == params.unique_code:
-                raise OperationException(
-                    f"Impossible to delete storage '{self.storage}' "
-                    f"because it's storage of transaction '{self}'"
-                )
-            # Если удаляется единица измерения транзакции
-            elif self.measure_unit == params.unique_code:
-                raise OperationException(
-                    f"Impossible to delete measure unit '{self.measure_unit}' "
-                    f"because it's unit of transaction '{self}'"
-                )
-            # Если удаляется номенклатура транзакции
-            elif self.nomenclature == params.unique_code:
-                raise OperationException(
-                    f"Impossible to delete nomenclature "
-                    f"'{self.nomenclature}' because it's nomenclature of "
-                    f"transaction '{self}'"
-                )
+        match event:
+            case EventType.TRY_DELETE_MODEL:
+                vld.validate(params, ModelBaseParams, "params")
+                params: ModelBaseParams = params
+                # Если удаляется склад транзакции
+                if self.storage == params.unique_code:
+                    ObserveService().block_model_deleting(
+                        params.unique_code,
+                        self.unique_code
+                    )
+                    raise OperationException(
+                        f"Impossible to delete storage '{self.storage}' "
+                        f"because it's storage of transaction '{self}'"
+                    )
+                # Если удаляется единица измерения транзакции
+                elif self.measure_unit == params.unique_code:
+                    ObserveService().block_model_deleting(
+                        params.unique_code,
+                        self.unique_code
+                    )
+                    raise OperationException(
+                        f"Impossible to delete measure unit '{self.measure_unit}' "
+                        f"because it's unit of transaction '{self}'"
+                    )
+                # Если удаляется номенклатура транзакции
+                elif self.nomenclature == params.unique_code:
+                    ObserveService().block_model_deleting(
+                        params.unique_code,
+                        self.unique_code
+                    )
+                    raise OperationException(
+                        f"Impossible to delete nomenclature "
+                        f"'{self.nomenclature}' because it's nomenclature of "
+                        f"transaction '{self}'"
+                    )

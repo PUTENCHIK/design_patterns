@@ -1,11 +1,13 @@
 from typing import Optional, Self, Union, Tuple
+from pydantic import BaseModel
 from src.core.validator import Validator as vld
 from src.core.event_type import EventType
 from src.core.exceptions import OperationException
-from src.core.event_params import AbstractEventParams, DeleteModelEventParams
+from src.core.event_params import ModelBaseParams
 from src.core.abstract_model import AbstractModel
 from src.dtos.measure_unit_dto import MeasureUnitDto
 from src.singletons.repository import Repository
+from src.singletons.observe_service import ObserveService
 
 
 """Модель единиц измерения для моделей номенклатуры"""
@@ -98,14 +100,19 @@ class MeasureUnitModel(AbstractModel):
             return bu, c * self.coefficient
     
     """Обработка событий моделей единиц измерения"""
-    def handle(self, event: EventType, params: AbstractEventParams):
+    def handle(self, event: EventType, params: BaseModel):
         super().handle(event, params)
-        if event == EventType.DELETE_MODEL:
-            vld.validate(params, DeleteModelEventParams, "params")
-            params: DeleteModelEventParams = params
-            # Если удаляется базовая единица измерения
-            if self.base_unit == params.unique_code:
-                raise OperationException(
-                    f"Impossible to delete measure unit '{self.base_unit}' "
-                    f"because it's base unit of '{self}'"
-                )
+        match event:
+            case EventType.TRY_DELETE_MODEL:
+                vld.validate(params, ModelBaseParams, "params")
+                params: ModelBaseParams = params
+                # Если удаляется базовая единица измерения
+                if self.base_unit == params.unique_code:
+                    ObserveService().block_model_deleting(
+                        params.unique_code,
+                        self.unique_code
+                    )
+                    raise OperationException(
+                        f"Impossible to delete measure unit '{self.base_unit}' "
+                        f"because it's base unit of '{self}'"
+                    )
