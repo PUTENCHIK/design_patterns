@@ -1,8 +1,10 @@
+from enum import Enum
 from typing import Any, Union, Dict, List
-from datetime import datetime
+from datetime import datetime, date
 from src.core.exceptions import ParamException
 from src.core.abstract_model import AbstractModel
 from src.core.abstract_converter import AbstractConverter
+from src.logics.enum_converter import EnumConverter
 from src.logics.basic_converter import BasicConverter
 from src.logics.datetime_converter import DatetimeConverter
 from src.logics.reference_converter import ReferenceConverter
@@ -34,12 +36,14 @@ class FactoryConverters:
         type_ = type(object_)
         if type_ in [bool, int, float, str] or object_ is None:
             return BasicConverter()
-        elif type_ is datetime:
+        elif type_ in [datetime, date]:
             return DatetimeConverter()
         elif isinstance(object_, AbstractModel):
             return ReferenceConverter(is_deep)
         elif type_ in [list, dict, tuple]:
             return StructureConverter(is_deep)
+        elif isinstance(object_, Enum):
+            return EnumConverter()
         else:
             raise ParamException(
                 f"Impossible to create converter from object "

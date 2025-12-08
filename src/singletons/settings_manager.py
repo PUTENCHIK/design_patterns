@@ -60,8 +60,11 @@ class SettingsManager:
                     self.convert_datetime_format(
                         settings["datetime_format"]) and
                     self.convert_block_date(
-                        settings["block_date"]
-                    )
+                        settings["block_date"]) and
+                    self.convert_logging_level(
+                        settings["logging_level"]) and
+                    self.convert_logging_mode(
+                        settings["logging_mode"])
                 )
         except:
             return False
@@ -121,6 +124,22 @@ class SettingsManager:
             self.settings.block_date = date(dt.year, dt.month, dt.day)
             return True
         except Exception:
+            return False
+    
+    """Метод загрузки уровня логирования"""
+    def convert_logging_level(self, data: str) -> bool:
+        try:
+            self.settings.logging_level = data
+            return True
+        except:
+            return False
+    
+    """Метод загрузки режима логирования"""
+    def convert_logging_mode(self, data: str) -> bool:
+        try:
+            self.settings.logging_mode = data
+            return True
+        except:
             return False
     
     """Метод инициализации стандартных значений полей"""

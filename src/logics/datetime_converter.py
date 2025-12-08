@@ -1,4 +1,5 @@
-from datetime import datetime 
+from typing import Union
+from datetime import datetime, date
 from src.core.validator import Validator as vld
 from src.core.abstract_converter import AbstractConverter
 from src.singletons.settings_manager import SettingsManager
@@ -15,7 +16,7 @@ class DatetimeConverter(AbstractConverter):
     """Переопределённый метод convert
     
     Приводит datetime к строковому представлению в заданном формате"""
-    def convert(self, object_: datetime) -> str:
-        vld.validate(object_, datetime, "object")
+    def convert(self, object_: Union[date, datetime]) -> str:
+        vld.validate(object_, (date, datetime), "object")
 
         return object_.strftime(SettingsManager().settings.datetime_format)

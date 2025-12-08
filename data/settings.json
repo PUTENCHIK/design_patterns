@@ -11,6 +11,8 @@
     "first_start": true,
     "datetime_format": "%Y-%m-%d %H:%M:%S",
     "block_date": "2025-01-16",
+    "logging_level": "debug",
+    "logging_mode": "console_file",
     "models": {
         "nomenclature_groups": [
             {
